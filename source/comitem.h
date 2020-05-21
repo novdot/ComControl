@@ -1,0 +1,246 @@
+/*!
+    \file comitem.h
+    \brief Заголовочный файл с описанием класса COM соединения
+
+    Содержит класс управления сотсояний устройства по COM
+
+    \author dnovikov
+    \mail novdot@mail.ru, novikov@electrooptika.ru
+    \date 2019 12 08
+ * */
+#ifndef COMITEM_H
+#define COMITEM_H
+
+#include <QObject>
+#include <QWidget>
+#include <QSerialPort>
+#include <QSerialPortInfo>
+#include <QTimer>
+#include <QTime>
+
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class FormComItem; }
+QT_END_NAMESPACE
+
+/*!
+    \defgroup ComItem Описатель COM соединения
+    \ingroup Dispatcher
+    \brief Основной модуль, содержащей в себе описания  управления
+состояний устройства по COM.
+    Также содержит описание протоколов обмена.
+*/
+///@{
+
+///структура настройки COM порта
+typedef struct com_settingsDef {
+    QString name; ///< Название
+    uint32_t baudRate;///< Скорость
+    //QSerialPort::Direction
+    //QSerialPort::PinoutSignal
+    QSerialPort::DataBits dataBits;///< Кол-во бит
+    QSerialPort::Parity parity;///<
+    QSerialPort::StopBits stopBits;///<
+    QSerialPort::FlowControl flowControl;///<
+} com_settings;
+
+/// Набор ошибок
+typedef enum com_errorsDef{
+    _no_error ///< Нет ошибок
+}com_errors;
+
+/// Набор состояний
+typedef enum com_stateDef{
+    _state_unknown ///<
+    ,_state_setup
+    ,_state_connected
+}com_state;
+
+/// Набор устройств
+typedef enum com_deviceDef{
+    _device_unkown
+    ,_device_base ///<
+    ,_device_transmille_3010ar ///<
+    ,_device_agilent ///<
+    ,_device_asc_gld
+    ,_device_dpb
+}com_device;
+
+/// индексы вкладок
+#define __TAB_SETUPS_IND 0
+#define __TAB_DEVICE_IND 1
+
+///константы
+#define __FIELD_MANUAL_BAUD "manual"
+
+///парсер
+#define __CONF_BAUD "BAUD"
+#define __CONF_DATABITS "DATABITS"
+#define __CONF_PARITY "PARITY"
+#define __CONF_STOPBITS "STOPBITS"
+#define __CONF_FLOWCONTROL "FLOWCONTROL"
+#define __CONF_DEVICE "DEVICE"
+
+#define __CONF_FIELD "*"
+#define __CONF_VALUE "="
+
+
+typedef struct com_settings_fieldDef {
+    QString name;
+    int id;
+} com_settings_field;
+
+/*!
+    \brief класс COM соединения
+    \author dnovikov
+    \date 2019 12 08
+    \warning на стадии разработки
+ * */
+class ComItem : public QWidget
+{
+    Q_OBJECT
+public:
+    ComItem(QWidget *parent = 0);
+    ~ComItem();
+
+    QStringList getMasterSignalsList();
+    QStringList getSlaveSignalsList();
+
+    com_settings getSetups(){return m_settings;}
+
+public slots:
+    /*!
+     * \brief setDevice установить номер и тип устройства(COM1)
+     */
+    void setDevice(QString);
+    /*!
+     * \brief Установить соединение с текущим портом
+    */
+    void doConnect();
+    /*!
+     * \brief Проинициализировать настройки
+     * и подключиться к текущему порту
+    */
+    void startConnect();
+    /*!
+     * \brief Отключиться от текущего порта
+    */
+    void startDisconnect();
+    /*!
+     * \brief Сохранение настроек COM порта
+     * (в том числе и установка текущего порта)
+     * \param[in] com_settings Структура настроек
+    */
+    void doSetup(com_settings a_settings);
+    /*!
+     * \brief Отправка данных в текущий порт
+     * \param[in] a_data Исходный контейнер данных
+    */
+    void sendData(const QByteArray &a_data);
+    /*!
+     * \brief Обновление полей управления
+    */
+    void updateSetupFields();
+    /*!
+     * \brief Обновление списка портов
+    */
+    void updateCOMLists();
+    /*!
+     * \brief Включение - выключение логгирования
+    */
+    void toggleLogger();
+signals:
+    /*!
+     * \brief Приход данных из порта
+     * \param[out] a_data Коненчный контейнер данных
+    */
+    void readData(QByteArray a_data);
+    /*!
+     * \brief Ошибка обработчика порта
+    */
+    void error(com_errors a_error);
+    void error(QString a_strerror);
+    /*!
+     * \brief connected - сигнал установленного соединения.
+     * содержит строку с именем устройства и номером порта
+     */
+    void connected(QString);
+    void disconnected();
+
+private:
+    Ui::FormComItem *m_pui;
+    com_settings m_settings;
+    com_state m_state;
+    bool m_bIsLogger;
+    void* m_pDevice;
+    int m_nCurrentDevice;
+    QSerialPort m_port;
+
+    //сервисная группа полей
+    //нужны для динамического отображения подключенных устройств
+    QTimer m_timService;
+    QStringList m_listCOMDev_prev;
+    QString m_strCOMDev_prev;
+
+    //список настроек для порта
+    QList<com_settings_field> m_lBaud;
+    QList<com_settings_field> m_lDatabits;
+    QList<com_settings_field> m_lParity;
+    QList<com_settings_field> m_lStopbits;
+    QList<com_settings_field> m_lFlowcontrol;
+    QList<com_settings_field> m_lDevice;
+    /*!
+     * \brief заполнение списков настроек порта
+    */
+    void initLists();
+    /*!
+     * \brief инициализация соединений сигнал-слот
+    */
+    void initSignalSlotConn();
+    /*!
+     * \brief собирает структуру настроек. данные тянем из полей формы
+    */
+    com_settings readSetups();
+
+    /*!
+     * \brief заполнение полей управления
+    */
+    void fillSetupFields();
+
+private slots:
+    /*!
+     * \brief загружаем конфигурацию настроек порта. обновляем поля формы загруженными настройками
+    */
+    void loadConfigFile();
+    /*!
+     * \brief сохраняем файл конфигурации настроек порта. данные тянем из полей формы
+    */
+    void saveConfigFile();
+    /*!
+     * \brief выбор файла из файловой системы
+    */
+    void chooseConfigFile();
+    /*!
+     * \brief доступ к полю ручного ввода BaudRate
+    */
+    void enableManualBaud(QString);
+    /*!
+     * \brief Слот блокировки выбранного элемента
+    */
+    void lockCOMDevice(int);
+    /*!
+     * \brief Слот обработки ошибок
+    */
+    void handleError(QSerialPort::SerialPortError error);
+    /*!
+     * \brief Слот чтения из порта по ReadyRead
+    */
+    void readPort();
+    /*!
+     * \brief setComDescription слот установки описания выбранного порта
+     */
+    void setComDescription(QString );
+};
+
+///@}
+#endif // COMITEM_H
