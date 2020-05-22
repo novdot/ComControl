@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class COMDeviceBase; }
@@ -33,12 +34,20 @@ public:
 public slots:
     virtual void receiveDataFromDevice(QByteArray a_data);
 
+signals:
+    void receive(QByteArray);
+
 private:
     Ui::COMDeviceBase *m_pui;
+    QTimer *tim;
+    QByteArray m_byteArray;
+    int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесонечное кол-во
 
 private slots:
     void clearRecText();
     void sendText();
+    void timUpdateEvent();
+    void timStop();
 };
 
 ///@}

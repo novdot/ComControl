@@ -2,6 +2,7 @@
 #include "ui_formcomitem.h"
 
 #include "device/comdevicebase.h"
+#include "device/comdevicegldboot.h"
 
 #include <QMessageBox>
 #include <QTextCodec>
@@ -79,6 +80,7 @@ void ComItem::initLists()
     __ADD_FIELD_TO_LIST(_device_transmille_3010ar,"Transmille 3010A-R",m_lDevice);
     __ADD_FIELD_TO_LIST(_device_agilent,"Agilent",m_lDevice);
     __ADD_FIELD_TO_LIST(_device_asc_gld,"ASC GLD",m_lDevice);
+    __ADD_FIELD_TO_LIST(_device_gld_boot,"BOOT GLD",m_lDevice);
     __ADD_FIELD_TO_LIST(_device_dpb,"DPB",m_lDevice);
 
 }
@@ -118,6 +120,9 @@ void ComItem::initSignalSlotConn()
     connect(m_pui->pushButton_item_com_setup_save_file, SIGNAL(clicked())
             , this, SLOT(saveConfigFile()));
 
+    connect(m_pui->pushButton_item_com_control_log, SIGNAL(clicked())
+            , this, SLOT(openLog()) );
+
 }
 /*****************************************************************************/
 ComItem::~ComItem()
@@ -135,6 +140,10 @@ void ComItem::setDevice(QString a_strDeviceName)
         switch(m_nCurrentDevice){
         case _device_base:
             if(m_pDevice!=nullptr) delete (COMDeviceBase*)m_pDevice;
+            break;
+        case _device_gld_boot:
+            if(m_pDevice!=nullptr) delete (COMDeviceGldBoot*)m_pDevice;
+            break;
         case _device_transmille_3010ar:
         case _device_agilent:
         case _device_asc_gld:
@@ -155,7 +164,11 @@ void ComItem::setDevice(QString a_strDeviceName)
     //create device
     switch(m_nCurrentDevice){
     case _device_base:
-        m_pDevice = new COMDeviceBase(); break;
+        m_pDevice = new COMDeviceBase();
+        break;
+    case _device_gld_boot:
+        m_pDevice = new COMDeviceGldBoot();
+        break;
     case _device_transmille_3010ar:
     case _device_agilent:
     case _device_asc_gld:
@@ -167,6 +180,11 @@ void ComItem::setDevice(QString a_strDeviceName)
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( sendDataToDevice(QByteArray) )
              , this, SLOT( sendData(QByteArray) ) );
+
+    connect( (QObject*)m_pDevice, SIGNAL( sendDataToDevice(QByteArray) )
+             , this, SLOT( add2LogOutput(QByteArray) ) );
+    connect( (QObject*)m_pDevice, SIGNAL( receive(QByteArray) )
+             , this, SLOT( add2LogInput(QByteArray) ) );
 
     //create new tab
     m_pui->tabWidget->addTab((QWidget*)m_pDevice,a_strDeviceName);
@@ -575,3 +593,24 @@ end_value:;
 
 }
 /*****************************************************************************/
+void ComItem::openLog()
+{
+    m_log.show();
+}
+/*****************************************************************************/
+void ComItem::add2Log(QString data)
+{
+    m_log.appendHtml(data);
+}
+/*****************************************************************************/
+void ComItem::add2LogInput(QByteArray data)
+{
+    QString strData = data.toHex();
+    add2Log(QString("Input:0x%1").arg(strData));
+}
+/*****************************************************************************/
+void ComItem::add2LogOutput(QByteArray data)
+{
+    QString strData = data.toHex();
+    add2Log(QString("Output:0x%1").arg(strData));
+}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>464</width>
+    <height>326</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,18 +53,8 @@
       <string>send</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
-       <widget class="QComboBox" name="comboBox_device_send_format"/>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="pushButton_device_send">
-        <property name="text">
-         <string>Send</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QPlainTextEdit" name="plainTextEdit_device_send"/>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="lineEdit_device_send_period"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
@@ -72,6 +62,36 @@
          <string>format</string>
         </property>
        </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QPlainTextEdit" name="plainTextEdit_device_send"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPushButton" name="pushButton_device_send">
+        <property name="text">
+         <string>Send</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>count</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>period (ms)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEdit_device_send_count"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox_device_send_format"/>
       </item>
      </layout>
     </widget>

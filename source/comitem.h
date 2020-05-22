@@ -17,6 +17,7 @@
 #include <QSerialPortInfo>
 #include <QTimer>
 #include <QTime>
+#include <QPlainTextEdit>
 
 
 QT_BEGIN_NAMESPACE
@@ -63,6 +64,7 @@ typedef enum com_deviceDef{
     ,_device_transmille_3010ar ///<
     ,_device_agilent ///<
     ,_device_asc_gld
+    ,_device_gld_boot
     ,_device_dpb
 }com_device;
 
@@ -175,6 +177,7 @@ private:
     void* m_pDevice;
     int m_nCurrentDevice;
     QSerialPort m_port;
+    QPlainTextEdit m_log;
 
     //сервисная группа полей
     //нужны для динамического отображения подключенных устройств
@@ -240,6 +243,16 @@ private slots:
      * \brief setComDescription слот установки описания выбранного порта
      */
     void setComDescription(QString );
+    /*!
+     * \brief openLog слот запуска лога для данного подключения
+     */
+    void openLog( );
+    /*!
+     * \brief add2Log запись в лог дан7ных
+     */
+    void add2Log(QString data);
+    void add2LogInput(QByteArray data);
+    void add2LogOutput(QByteArray data);
 };
 
 ///@}
