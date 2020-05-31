@@ -12,6 +12,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class ComDispatcher; }
 QT_END_NAMESPACE
 
+#define COMITEM_NAME_DEFAULT "new COM"
+
 /*!
     \defgroup Dispatcher Описатель диспетчера соединений
     \brief Основной модуль, содержащий управление объектами соединений по раличным интерфейсам
@@ -36,15 +38,24 @@ public:
 public slots:
     void createTab();
     void closeTab(int a_index);
-    void renameTab(int a_index, QString a_strname);
+    void renameTab(int a_index, QString a_strName);
 
+    void itemConnected(ComItem * a_pitem,QString a_strName);
+    void itemDisconnect(ComItem * a_pitem);
 private slots:
     void on_actionAdd_new_tab_triggered();
+    void on_actionOpen_link_editor_triggered();
+    void on_actionQuit_triggered();
 
 private:
     Ui::ComDispatcher *ui;
     QList<ComItem*> m_lpitems;
     ComControl* m_pcontrol;
+
+    /*!
+        \brief Вернет индекс вкладки основываясь на указателе виджета на вкладке
+    */
+    int searchTabIndexByItemPtr(ComItem * a_pitem);
 };
 
 ///@}

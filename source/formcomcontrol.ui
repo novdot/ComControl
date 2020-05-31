@@ -1,42 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>FormComControl</class>
+ <widget class="QWidget" name="FormComControl">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>567</width>
-    <height>392</height>
+    <width>606</width>
+    <height>478</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBox_link_list">
+   <item row="3" column="1">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Links List</string>
+      <string>Close with ...</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>1</number>
-      </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QListWidget" name="listWidget_link_list"/>
+       <widget class="QPushButton" name="pushButton_accept">
+        <property name="text">
+         <string>Accept list</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_deny">
+        <property name="text">
+         <string>Deny list</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -46,77 +42,11 @@
      <property name="title">
       <string>Link info</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0,0">
-      <item row="5" column="0" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QPushButton" name="pushButton_link_accept">
-          <property name="text">
-           <string>Accept</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_link_cancel">
-          <property name="text">
-           <string>Cancel</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_master">
-        <property name="title">
-         <string>Master</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>1</number>
-         </property>
-         <property name="topMargin">
-          <number>1</number>
-         </property>
-         <property name="rightMargin">
-          <number>1</number>
-         </property>
-         <property name="bottomMargin">
-          <number>1</number>
-         </property>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_4"/>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_link_name_text">
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </widget>
-      </item>
+     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0,0,0">
       <item row="3" column="0" colspan="2">
        <widget class="QGroupBox" name="groupBox_slave">
         <property name="title">
-         <string>Slave</string>
+         <string>Slave (output msg parser)</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <property name="leftMargin">
@@ -131,25 +61,112 @@
          <property name="bottomMargin">
           <number>1</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
+         <item row="2" column="1">
+          <widget class="QComboBox" name="comboBox_slave_format"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>TextLabel</string>
+            <string>action value</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_2"/>
+          <widget class="QComboBox" name="comboBox_slave_comitem"/>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>TextLabel</string>
+            <string>choose comitem</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_3"/>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="lineEdit_slave_value"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_link_name_text">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_master">
+        <property name="title">
+         <string>Master (input msg parser)</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>1</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>1</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
+         <item row="0" column="2">
+          <widget class="QComboBox" name="comboBox_master_comitem"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>choose comitem</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>event value</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLineEdit" name="lineEdit_master_value"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QComboBox" name="comboBox_master_format"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit_link_info_name"/>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_link_control">
+        <property name="title">
+         <string>Link control</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="pushButton_link_add">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_link_change">
+           <property name="text">
+            <string>Change</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_link_remove">
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -167,30 +184,67 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_link_info_name"/>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_link_control">
-     <property name="title">
-      <string>Link control</string>
+   <item row="2" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="0" rowspan="4">
+    <widget class="QGroupBox" name="groupBox_link_list">
+     <property name="title">
+      <string>Links List</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
       <item>
-       <widget class="QPushButton" name="pushButton_link_add">
-        <property name="text">
-         <string>Add Current</string>
-        </property>
-       </widget>
+       <widget class="QListWidget" name="listWidget_robot_list"/>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_link_remove">
-        <property name="text">
-         <string>Remove Current</string>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>List control</string>
         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButton_save">
+           <property name="text">
+            <string>Save</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_open">
+           <property name="text">
+            <string>Open</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

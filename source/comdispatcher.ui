@@ -66,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
@@ -74,6 +74,8 @@
      <string>Options</string>
     </property>
     <addaction name="actionAdd_new_tab"/>
+    <addaction name="actionOpen_link_editor"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuOptions"/>
   </widget>
@@ -84,6 +86,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionOpen_link_editor">
+   <property name="text">
+    <string>Open link editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>

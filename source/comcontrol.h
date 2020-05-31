@@ -14,6 +14,28 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QList>
+#include <QListWidgetItem>
+#include <QMessageBox>
+
+#include "comitem.h"
+#include "device/comdeviceinterface.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class FormComControl; }
+QT_END_NAMESPACE
+
+#define __ROBOT_PARSER_FIELD_LINKNAME "LINKNAME"
+#define __ROBOT_PARSER_FIELD_MASTER_FORM "MASTER_FORM"
+#define __ROBOT_PARSER_FIELD_MASTER_VAL "MASTER_VAL"
+#define __ROBOT_PARSER_FIELD_SLAVE_FORM "SLAVE_FORM"
+#define __ROBOT_PARSER_FIELD_SLAVE_VAL "SLAVE_VAL"
+#define __ROBOT_PARSER_FIELD_END "#"
+
+#define __ROBOT_PARSER_FIELD "*"
+#define __ROBOT_PARSER_VALUE "="
+
+#define NULL_COMITEM_PTR "null"
 
 /*!
     \defgroup Control Описатель диспетчера соединений
@@ -34,8 +56,57 @@ class ComControl : public QWidget
     Q_OBJECT
 public:
     explicit ComControl(QWidget *parent = nullptr);
+    ~ComControl();
 
+public slots:
+    /*!
+        \brief Загрузить список всех созданных объектов
+    */
+    void setItemsList(QList<ComItem*> a_items);
 signals:
+    void setupRobot(QList<com_robot>);
+private:
+    Ui::FormComControl *m_pui;
+    QList<com_robot> m_lRobot;
+    QList<ComItem*> m_lItems;
+    QMessageBox m_box;
+
+    QList< QPair<int,QString> > m_lFormat; //< формат входных/выходных данных
+    /*!
+        \brief заполняем структуру из полей GUI
+    */
+    com_robot completeLinkFromFields();
+
+private slots:
+    /*!
+        \brief Обработчик выбора записи из списка
+    */
+    void chooseRobotLine(QListWidgetItem *);
+    /*!
+        \brief Просто закрываем все
+    */
+    void updateRobotList();
+    /*!
+        \brief Просто закрываем все
+    */
+    void deny();
+    /*!
+        \brief Закрываем и список линков рассылаем по всем устройствам
+    */
+    void accept();
+
+    /*!
+        \brief Работа с текущими полями и списком всех линков
+    */
+    void addLink();
+    void changeLink();
+    void removeLink();
+
+    /*!
+        \brief Работа со списком линков
+    */
+    void save();
+    void open();
 
 };
 

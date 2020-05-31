@@ -46,8 +46,8 @@ SOURCES += \
     $$SOURCE_PATH/comitem.cpp \
     $$SOURCE_PATH/main.cpp \
     ../source/comcontrol.cpp \
-    ../source/device/comdevicebase.cpp \
-    ../source/device/comdevicegldboot.cpp
+    ../source/device/comdevicebase.cpp
+    #../source/device/comdevicegldboot.cpp
     #../source/device/comdeviceinterface.cpp
 
 HEADERS += \
@@ -55,8 +55,8 @@ HEADERS += \
     $$SOURCE_PATH/comitem.h \
     ../source/comcontrol.h \
     ../source/device/comdevicebase.h \
-    ../source/device/comdevicegldboot.h \
     ../source/device/comdeviceinterface.h
+    #../source/device/comdevicegldboot.h \
 
 FORMS += \
     $$SOURCE_PATH/comdispatcher.ui \
@@ -69,3 +69,11 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32: {
+        #RC_FILE += ../res/res.rc
+        #OTHER_FILES += ../res/res.rc
+}
+
+RESOURCES += \
+    ../res/resurce.qrc

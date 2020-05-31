@@ -23,6 +23,11 @@ COMDeviceBase::COMDeviceBase(QWidget *parent)
 
     m_pui->lineEdit_device_send_count->setText("1");
 
+    connect(this,SIGNAL(slaveListUpdated()),this,SLOT(updateSlaveControl()));
+
+    connect(m_pui->listWidget_slave_list ,SIGNAL(itemClicked(QListWidgetItem *))
+                , this, SLOT(doSlaveControl(QListWidgetItem *)));
+
     tim = new QTimer();
     connect(tim,SIGNAL(timeout()),SLOT(timUpdateEvent()));
 }
@@ -41,6 +46,8 @@ void COMDeviceBase::receiveDataFromDevice(QByteArray a_data)
     static bool m_bIgnoreNewLine = false;
 
     //получим строку в зависимости от выбранного формата
+    strData = convertByteArray2Str(nFormatInd,a_data);
+    /*
     switch (nFormatInd) {
     case _device_format_utf8:
         strData = QTextCodec::codecForName("UTF-8")->toUnicode(a_data);
@@ -52,11 +59,12 @@ void COMDeviceBase::receiveDataFromDevice(QByteArray a_data)
     default:
         strData = a_data.toHex();
         break;
-    }
+    }*/
     //запишем строку
     m_pui->plainTextEdit_device_rec->appendHtml(strData);
 
     emit receive(a_data);
+    this->robot(a_data);
 
     /*
     m_pui->plainTextEdit_device_rec->textCursor().insertHtml(strData);
@@ -76,6 +84,76 @@ void COMDeviceBase::receiveDataFromDevice(QByteArray a_data)
         m_pui->plainTextEdit_device_rec->moveCursor(QTextCursor::End);
         m_bIgnoreNewLine = false;
     }*/
+}
+/*****************************************************************************/
+QByteArray COMDeviceBase::convertStr2ByteArray(int nFormatInd, QString strText)
+{
+    QByteArray byteArray;
+    switch (nFormatInd) {
+    case _device_format_utf8:
+        byteArray = strText.toLocal8Bit();
+        break;
+    case _device_format_ascii:
+        break;
+    case _device_format_hex:
+    default:
+        strText.remove(QChar(' '));
+        byteArray = QByteArray::fromHex(strText.toUtf8());
+        break;
+    }
+    return byteArray;
+}
+/*****************************************************************************/
+QString COMDeviceBase::convertByteArray2Str(int nFormatInd, QByteArray a_data)
+{
+    QString strData;
+    //получим строку в зависимости от выбранного формата
+    switch (nFormatInd) {
+    case _device_format_utf8:
+        strData = QTextCodec::codecForName("UTF-8")->toUnicode(a_data);
+        break;
+    case _device_format_ascii:
+        strData = QTextCodec::codecForName("KOI8-R")->toUnicode(a_data);
+        break;
+    case _device_format_hex:
+    default:
+        strData = a_data.toHex();
+        break;
+    }
+    return strData;
+}
+/*****************************************************************************/
+void COMDeviceBase::robot(QByteArray a_msg)
+{
+    QList<com_robot>::ConstIterator begin;
+    QList<com_robot>::ConstIterator end;
+    begin = m_lRobot.constBegin();
+    end = m_lRobot.constEnd();
+
+    QString rec = "";
+
+    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+        //проверим мастер - устройство
+        //если - текущее, то поробуем выполнить
+        if( ((*i).master.device == this) ){
+            //если значение - по умолчанию, то просто транслируем
+            if((*i).master.value == COM_ROBOT_VALUE_DEFAULT) {
+                ((COMDeviceBase*)(*i).slave.device)->sendDataToDevice(a_msg);
+                continue;
+            }
+            //перегоним полученное сообщение в формат мастера
+            rec = convertStr2ByteArray((*i).master.format,(*i).master.value);
+            //сравним значение мастера с принятым сообщением
+            if((*i).master.value == rec) {
+                //если успех - запишем в слейв перекодированное сообщение слейва
+                ((COMDeviceBase*)(*i).slave.device)->sendDataToDevice(
+                            convertStr2ByteArray((*i).master.format,(*i).master.value)
+                            );
+                continue;
+            }
+
+        }
+    }
 }
 
 /*****************************************************************************/
@@ -104,6 +182,9 @@ void COMDeviceBase::sendText()
     strText = m_pui->plainTextEdit_device_send->toPlainText();
 
     //получим строку в зависимости от выбранного формата
+    m_byteArray = convertStr2ByteArray(nFormatInd,strText);
+    /*
+    //получим строку в зависимости от выбранного формата
     switch (nFormatInd) {
     case _device_format_utf8:
         //strText.fromUtf8( &byteArray );
@@ -117,7 +198,7 @@ void COMDeviceBase::sendText()
         byteArray = QByteArray::fromHex(strText.toUtf8());
         break;
     }
-    m_byteArray = byteArray;
+    m_byteArray = byteArray;*/
 
     //проверяем поля ввода для отправки сообщений
     //если количество отправок > 1, то запускаем таймер с установленным периодом.
@@ -130,7 +211,7 @@ void COMDeviceBase::sendText()
 
     if(m_nSendCnt == 1) {
         m_nSendCnt = 0;
-        emit sendDataToDevice(m_byteArray);
+        sendDataToDevice(m_byteArray);
     }else{
         if(m_nSendCnt==0) m_nSendCnt = -1;
         m_pui->pushButton_device_send->setText("stop");
@@ -139,6 +220,12 @@ void COMDeviceBase::sendText()
 
         tim->start(period);
     }
+}
+
+/*****************************************************************************/
+void COMDeviceBase::sendDataToDevice(QByteArray a_data)
+{
+    emit send(a_data);
 }
 /*****************************************************************************/
 void COMDeviceBase::timStop()
@@ -165,5 +252,53 @@ void COMDeviceBase::timUpdateEvent()
         m_pui->lineEdit_device_send_count->setText(QString("%1").arg(m_nSendCnt));
     }
 
-    emit sendDataToDevice(m_byteArray);
+    sendDataToDevice(m_byteArray);
+}
+/*****************************************************************************/
+void COMDeviceBase::updateSlaveControl()
+{
+    qDebug()<<Q_FUNC_INFO;
+    QList<com_robot>::ConstIterator begin;
+    QList<com_robot>::ConstIterator end;
+    begin = m_lRobotSlave.constBegin();
+    end = m_lRobotSlave.constEnd();
+
+    QString rec = "";
+
+    m_pui->listWidget_slave_list->clear();
+
+    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+        if( ((*i).slave.device != this) ) continue;
+        m_pui->listWidget_slave_list->addItem((*i).name);
+    }
+}
+/*****************************************************************************/
+void COMDeviceBase::doSlaveControl(QListWidgetItem * item)
+{
+    QString choosenText = item->text();
+    //снимем подсветку со списка
+    for(int i=0;i<m_pui->listWidget_slave_list->count();i++) {
+        (m_pui->listWidget_slave_list->item(i))->setBackgroundColor(Qt::white);
+    }
+    //подсветим выбранную комманду
+    item->setBackgroundColor(Qt::yellow);
+
+    //очистим поле ввода комманды
+    m_pui->plainTextEdit_device_send->clear();
+
+    QList<com_robot>::ConstIterator begin;
+    QList<com_robot>::ConstIterator end;
+    begin = m_lRobotSlave.constBegin();
+    end = m_lRobotSlave.constEnd();
+    //ищем выбранный элемнт в списке
+    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+        if((*i).name!=choosenText) continue;
+        if( ((*i).slave.device != this) ) continue;
+        if( ((*i).slave.value == COM_ROBOT_VALUE_DEFAULT) ) continue;
+        //все нашли , элемент подходит данному ComDevice
+        //установим нашу команду
+        m_pui->plainTextEdit_device_send->appendHtml((*i).slave.value);
+        m_pui->comboBox_device_send_format->setCurrentIndex((*i).slave.format);
+        return;
+    }
 }

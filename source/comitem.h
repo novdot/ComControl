@@ -19,6 +19,7 @@
 #include <QTime>
 #include <QPlainTextEdit>
 
+#include "device/comdeviceinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormComItem; }
@@ -45,28 +46,12 @@ typedef struct com_settingsDef {
     QSerialPort::FlowControl flowControl;///<
 } com_settings;
 
-/// Набор ошибок
-typedef enum com_errorsDef{
-    _no_error ///< Нет ошибок
-}com_errors;
-
 /// Набор состояний
 typedef enum com_stateDef{
     _state_unknown ///<
     ,_state_setup
     ,_state_connected
 }com_state;
-
-/// Набор устройств
-typedef enum com_deviceDef{
-    _device_unkown
-    ,_device_base ///<
-    ,_device_transmille_3010ar ///<
-    ,_device_agilent ///<
-    ,_device_asc_gld
-    ,_device_gld_boot
-    ,_device_dpb
-}com_device;
 
 /// индексы вкладок
 #define __TAB_SETUPS_IND 0
@@ -86,7 +71,6 @@ typedef enum com_deviceDef{
 #define __CONF_FIELD "*"
 #define __CONF_VALUE "="
 
-
 typedef struct com_settings_fieldDef {
     QString name;
     int id;
@@ -105,10 +89,21 @@ public:
     ComItem(QWidget *parent = 0);
     ~ComItem();
 
-    QStringList getMasterSignalsList();
-    QStringList getSlaveSignalsList();
-
     com_settings getSetups(){return m_settings;}
+
+    /*!
+     * \brief получить текущее имя соединения
+    */
+    QString getItemName() {return m_strComItemName;}
+    /*!
+     * \brief получить текущее состояние соединения
+    */
+    bool isConnected() {return m_port.isOpen();}
+
+    /*!
+     * \brief получить текущее устройство
+    */
+    void* getDevice(){return m_pDevice;}
 
 public slots:
     /*!
@@ -151,6 +146,7 @@ public slots:
      * \brief Включение - выключение логгирования
     */
     void toggleLogger();
+
 signals:
     /*!
      * \brief Приход данных из порта
@@ -160,14 +156,13 @@ signals:
     /*!
      * \brief Ошибка обработчика порта
     */
-    void error(com_errors a_error);
     void error(QString a_strerror);
     /*!
      * \brief connected - сигнал установленного соединения.
      * содержит строку с именем устройства и номером порта
      */
-    void connected(QString);
-    void disconnected();
+    void connected(ComItem *,QString);
+    void disconnected(ComItem *);
 
 private:
     Ui::FormComItem *m_pui;
@@ -175,9 +170,12 @@ private:
     com_state m_state;
     bool m_bIsLogger;
     void* m_pDevice;
-    int m_nCurrentDevice;
     QSerialPort m_port;
     QPlainTextEdit m_log;
+
+    //имя объекта
+    //нужно для однозначного определения , что данный объект подключен к порту
+    QString m_strComItemName;
 
     //сервисная группа полей
     //нужны для динамического отображения подключенных устройств
@@ -229,10 +227,15 @@ private slots:
     void enableManualBaud(QString);
     /*!
      * \brief Слот блокировки выбранного элемента
+     * Нужен для блокировки меню выбора Серийных портов в системе
+     * Позволяет при подключении-отключении порта в системе обновлять список лоступных портов
+     * и не производить переключения текущего порта(если он существует)
+     * 0 - снять блокировку
+     * 1 - установить блокировку
     */
     void lockCOMDevice(int);
     /*!
-     * \brief Слот обработки ошибок
+     * \brief Слот обработки ошибок QSerialPort
     */
     void handleError(QSerialPort::SerialPortError error);
     /*!
@@ -248,7 +251,7 @@ private slots:
      */
     void openLog( );
     /*!
-     * \brief add2Log запись в лог дан7ных
+     * \brief add2Log запись в лог данных
      */
     void add2Log(QString data);
     void add2LogInput(QByteArray data);

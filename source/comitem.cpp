@@ -21,7 +21,6 @@ ComItem::ComItem(QWidget *parent)
     m_state = _state_setup;
     m_bIsLogger = false;
     m_pDevice = nullptr;
-    m_nCurrentDevice = _device_unkown;
 
     m_pui->pushButton_item_com_control_log->toggled(true);
 
@@ -32,6 +31,8 @@ ComItem::ComItem(QWidget *parent)
 
     m_timService.setInterval(1000);
     m_timService.start();
+
+    this->setDevice("Device");
 }
 /*****************************************************************************/
 #define __ADD_FIELD_TO_LIST(ID_X,NAME_X,LIST_X) \
@@ -75,14 +76,6 @@ void ComItem::initLists()
     __ADD_FIELD_TO_LIST(QSerialPort::NoFlowControl,"NoFlowControl",m_lFlowcontrol);
     __ADD_FIELD_TO_LIST(QSerialPort::HardwareControl,"HardwareControl",m_lFlowcontrol);
     __ADD_FIELD_TO_LIST(QSerialPort::SoftwareControl,"SoftwareControl",m_lFlowcontrol);
-
-    __ADD_FIELD_TO_LIST(_device_base,"BaseDevice",m_lDevice);
-    __ADD_FIELD_TO_LIST(_device_transmille_3010ar,"Transmille 3010A-R",m_lDevice);
-    __ADD_FIELD_TO_LIST(_device_agilent,"Agilent",m_lDevice);
-    __ADD_FIELD_TO_LIST(_device_asc_gld,"ASC GLD",m_lDevice);
-    __ADD_FIELD_TO_LIST(_device_gld_boot,"BOOT GLD",m_lDevice);
-    __ADD_FIELD_TO_LIST(_device_dpb,"DPB",m_lDevice);
-
 }
 /*****************************************************************************/
 void ComItem::initSignalSlotConn()
@@ -136,71 +129,28 @@ void ComItem::setDevice(QString a_strDeviceName)
 {
     //delete old parser tab
     if(m_pDevice!=nullptr) {
-        m_pui->tabWidget->removeTab(__TAB_DEVICE_IND);
-        switch(m_nCurrentDevice){
-        case _device_base:
-            if(m_pDevice!=nullptr) delete (COMDeviceBase*)m_pDevice;
-            break;
-        case _device_gld_boot:
-            if(m_pDevice!=nullptr) delete (COMDeviceGldBoot*)m_pDevice;
-            break;
-        case _device_transmille_3010ar:
-        case _device_agilent:
-        case _device_asc_gld:
-        case _device_dpb:
-        default :break;
-        }
+        delete (COMDeviceBase*)m_pDevice;
         m_pDevice = nullptr;
-        m_nCurrentDevice = _device_unkown;
-    }
-
-    //get device connect options
-    QList<com_settings_field>::ConstIterator end;
-    end = m_lDevice.constEnd();
-    for(QList<com_settings_field>::ConstIterator i = m_lDevice.constBegin(); i != end; ++i){
-        if((*i).name==a_strDeviceName) {m_nCurrentDevice = (*i).id;break;}
     }
 
     //create device
-    switch(m_nCurrentDevice){
-    case _device_base:
-        m_pDevice = new COMDeviceBase();
-        break;
-    case _device_gld_boot:
-        m_pDevice = new COMDeviceGldBoot();
-        break;
-    case _device_transmille_3010ar:
-    case _device_agilent:
-    case _device_asc_gld:
-    case _device_dpb:
-    default :
-        return;
-    }
+    m_pDevice = new COMDeviceBase();
+
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
-    connect( (QObject*)m_pDevice, SIGNAL( sendDataToDevice(QByteArray) )
+    connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
              , this, SLOT( sendData(QByteArray) ) );
 
-    connect( (QObject*)m_pDevice, SIGNAL( sendDataToDevice(QByteArray) )
+    connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
              , this, SLOT( add2LogOutput(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( receive(QByteArray) )
              , this, SLOT( add2LogInput(QByteArray) ) );
 
+    connect( &m_port, SIGNAL( error(QSerialPort::SerialPortError) )
+             , this, SLOT( handleError(QSerialPort::SerialPortError) ) );
+
     //create new tab
     m_pui->tabWidget->addTab((QWidget*)m_pDevice,a_strDeviceName);
-}
-
-/*****************************************************************************/
-QStringList ComItem::getMasterSignalsList()
-{
-    QStringList newlist;
-    return newlist;
-}
-/*****************************************************************************/
-QStringList ComItem::getSlaveSignalsList()
-{
-    QStringList newlist;
-    return newlist;
 }
 
 /*****************************************************************************/
@@ -290,9 +240,16 @@ void ComItem::fillSetupFields()
 /*****************************************************************************/
 void ComItem::startConnect()
 {
+    //check if already open
     if (m_port.isOpen()) return;
+
+    //read current setups
     doSetup(readSetups());
+
+    //try connect to port with setups
     doConnect();
+
+    //update gui fields enable for user
     updateSetupFields();
     if (m_port.isOpen()) {
 
@@ -315,30 +272,36 @@ void ComItem::doConnect()
     //if connect succsess - disable setups
     if (m_port.open(QIODevice::ReadWrite)) {
         m_state = _state_connected;
-        emit connected("");
-        /*
-        showStatusMessage(tr("Connected to %1 : %2, %3, %4, %5, %6")
-                          .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
-                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
-                          */
+        m_strComItemName = m_settings.name;
+        emit connected(this,m_strComItemName);
+        this->add2Log(tr("Connected to %1 : %2, %3, %4, %5, %6")
+                      .arg(m_settings.name)
+                      .arg(m_settings.baudRate)
+                      .arg(m_settings.dataBits)
+                      .arg(m_settings.parity)
+                      .arg(m_settings.stopBits)
+                      .arg(m_settings.flowControl)
+                      );
     } else {
         QMessageBox::critical(this, tr("Error"), m_port.errorString());
         m_state = _state_setup;
-        //showStatusMessage(tr("Open error"));
     }
 }
 /*****************************************************************************/
 void ComItem::startDisconnect()
 {
+    //close port
     if (m_port.isOpen()) {
         m_port.close();
-        emit disconnected();
+        emit disconnected(this);
     }
+    //update gui fields enable for user
     m_state = _state_setup;
     updateSetupFields();
-    /*
-    showStatusMessage(tr("Disconnected"));
-    */
+
+    this->add2Log(tr("Disconnected from %1")
+                  .arg(m_settings.name)
+                  );
 }
 /*****************************************************************************/
 #define __UI_FIELD_TO_STRUCT_INIT \
@@ -391,7 +354,10 @@ void ComItem::sendData(const QByteArray &a_data)
 /*****************************************************************************/
 void ComItem::handleError(QSerialPort::SerialPortError error)
 {
-
+    this->add2Log(tr("For port:%1 catch QSerialPort error code:%2")
+            .arg(m_settings.name)
+            .arg(error)
+            );
 }
 /*****************************************************************************/
 void ComItem::readPort()
