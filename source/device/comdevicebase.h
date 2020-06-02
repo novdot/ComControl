@@ -36,8 +36,8 @@ public:
     static QString convertByteArray2Str(int,QByteArray);
 
 public slots:
-    virtual void receiveDataFromDevice(QByteArray a_data);
-    virtual void sendDataToDevice(QByteArray a_data);
+    void receiveDataFromDevice(QByteArray a_data);
+    void sendDataToDevice(QByteArray a_data);
 
     /*!
      * \brief robot обработка входного сообщения
@@ -45,11 +45,8 @@ public slots:
      * выполняем ее.
      */
     void robot(QByteArray a_msg);
-
-    /*!
-     * \brief обновление списка возможных команд
-     */
-    virtual void updateSlaveControl();
+    void showRobotView();
+    void updateSlaveControl();
 signals:
     void receive(QByteArray);
 
@@ -58,6 +55,8 @@ private:
     QTimer *tim;
     QByteArray m_byteArray;
     int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесонечное кол-во
+
+    QListWidget m_lRobotView;
 
 private slots:
     /*!

@@ -71,8 +71,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 win32: {
-        #RC_FILE += ../res/res.rc
-        #OTHER_FILES += ../res/res.rc
+        RC_ICONS = ../res/serial_port_icon.ico
+        RC_FILE += ../res/res.rc
 }
 
 RESOURCES += \

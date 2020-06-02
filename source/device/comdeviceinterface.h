@@ -8,6 +8,7 @@
 #include <QByteArray>
 #include <QDebug>
 
+
 /*!
     \defgroup COMDeviceInterface интерфейс устройства
     \ingroup COMDevice
@@ -65,7 +66,6 @@ public:
             if( ((*i).master.device != nullptr) ) continue;
             m_lRobotSlave.append((*i));
         }
-
         updateSlaveControl();
     }
 
@@ -92,9 +92,18 @@ public slots:
     virtual void receiveDataFromDevice(QByteArray a_data){Q_UNUSED(a_data)}
     virtual void sendDataToDevice(QByteArray a_data){Q_UNUSED(a_data)}
     /*!
+     * \brief обновление отображения логики робота
+     */
+    virtual void showRobotView(){}
+    /*!
      * \brief обновление списка возможных команд
      */
     virtual void updateSlaveControl(){}
+
+    void itemConnected(void * a_pitem,QString a_strName){m_strCOMName=a_strName;}
+    void itemDisconnect(void * a_pitem){m_strCOMName="";}
+
+    QString getCOMName(){return m_strCOMName;}
 signals:
     /*!
      * \brief сигнал пакета управления устройством
@@ -107,6 +116,7 @@ signals:
     void slaveListUpdated();
 private:
 protected:
+    QString m_strCOMName;
     //список событий
     QList<com_robot> m_lRobot;
     //подсписоки событий. Содержатся только события для слейва - быстрые команды на выдачу

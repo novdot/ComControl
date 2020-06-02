@@ -161,8 +161,8 @@ signals:
      * \brief connected - сигнал установленного соединения.
      * содержит строку с именем устройства и номером порта
      */
-    void connected(ComItem *,QString);
-    void disconnected(ComItem *);
+    void connected(void*,QString);
+    void disconnected(void*);
 
 private:
     Ui::FormComItem *m_pui;

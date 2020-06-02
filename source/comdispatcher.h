@@ -40,8 +40,8 @@ public slots:
     void closeTab(int a_index);
     void renameTab(int a_index, QString a_strName);
 
-    void itemConnected(ComItem * a_pitem,QString a_strName);
-    void itemDisconnect(ComItem * a_pitem);
+    void itemConnected(void * a_pitem,QString a_strName);
+    void itemDisconnect(void * a_pitem);
 private slots:
     void on_actionAdd_new_tab_triggered();
     void on_actionOpen_link_editor_triggered();

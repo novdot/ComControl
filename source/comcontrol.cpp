@@ -10,6 +10,8 @@ ComControl::ComControl(QWidget *parent)
     , m_pui(new Ui::FormComControl)
 {
     m_pui->setupUi(this);
+    this->setWindowIcon(QIcon(":icon/settings.png"));
+    this->setWindowTitle(tr("Setting","Window title"));
 
     m_lFormat = COMDeviceBase::getFormatList();
     QList< QPair<int,QString> >::ConstIterator end;
@@ -321,7 +323,7 @@ void ComControl::save()
     QString strFile = QFileDialog::getSaveFileName(
                         this,
                         tr("Сохранить файл робота"),
-                        "C://",
+                        QDir::current().absolutePath(),
                         "Файлы робота (*.robot)"
                         );
     QFile file(strFile);
@@ -364,7 +366,7 @@ void ComControl::open()
     QString strFile = QFileDialog::getOpenFileName(
                         this,
                         tr("Выбрать файл робота"),
-                        "C://",
+                        QDir::current().absolutePath(),
                         "Файлы робота (*.robot)"
                         );
     QFile file(strFile);

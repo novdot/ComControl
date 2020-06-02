@@ -9,6 +9,7 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     , ui(new Ui::ComDispatcher)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));
 
     QString strProjName = "COMControl";
     ///TODO versions
@@ -41,21 +42,21 @@ void ComDispatcher::createTab()
     ComItem * pwgt = new ComItem();
     m_lpitems.append(pwgt);
     ui->tabWidget->addTab(pwgt,QObject::trUtf8(COMITEM_NAME_DEFAULT));
-    connect(pwgt,SIGNAL(connected(ComItem *,QString)),this,SLOT(itemConnected(ComItem *,QString)));
-    connect(pwgt,SIGNAL(disconnected(ComItem *)),this,SLOT(itemDisconnect(ComItem *)));
+    connect(pwgt,SIGNAL(connected(void*,QString)),this,SLOT(itemConnected(void*,QString)));
+    connect(pwgt,SIGNAL(disconnected(void *)),this,SLOT(itemDisconnect(void*)));
 }
 
 /*****************************************************************************/
-void ComDispatcher::itemConnected(ComItem * a_pitem,QString a_strName)
+void ComDispatcher::itemConnected(void* a_pitem,QString a_strName)
 {
-    this->renameTab(searchTabIndexByItemPtr(a_pitem),a_strName);
+    this->renameTab(searchTabIndexByItemPtr((ComItem*)a_pitem),a_strName);
     m_pcontrol->setItemsList(m_lpitems);
 }
 
 /*****************************************************************************/
-void ComDispatcher::itemDisconnect(ComItem * a_pitem)
+void ComDispatcher::itemDisconnect(void * a_pitem)
 {
-    this->renameTab(searchTabIndexByItemPtr(a_pitem),COMITEM_NAME_DEFAULT);
+    this->renameTab(searchTabIndexByItemPtr((ComItem*)a_pitem),COMITEM_NAME_DEFAULT);
     m_pcontrol->setItemsList(m_lpitems);
 }
 

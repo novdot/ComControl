@@ -255,6 +255,31 @@ void COMDeviceBase::timUpdateEvent()
     sendDataToDevice(m_byteArray);
 }
 /*****************************************************************************/
+void COMDeviceBase::showRobotView()
+{
+    QString line;
+    QList<com_robot>::ConstIterator begin;
+    QList<com_robot>::ConstIterator end;
+    begin = m_lRobot.constBegin();
+    end = m_lRobot.constEnd();
+
+    m_lRobotView.clear();
+
+    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+        line.clear();
+        line = QString("%1 from:%2 if EQ val:%3 to:%4 send val:%5 ")
+                .arg((*i).name)
+                .arg(((COMDeviceBase*)(*i).master.device)->getCOMName())
+                .arg((*i).master.value)
+                .arg(((COMDeviceBase*)(*i).slave.device)->getCOMName())
+                .arg((*i).slave.value)
+                ;
+
+        m_lRobotView.addItem(line);
+    }
+    m_lRobotView.show();
+}
+/*****************************************************************************/
 void COMDeviceBase::updateSlaveControl()
 {
     qDebug()<<Q_FUNC_INFO;

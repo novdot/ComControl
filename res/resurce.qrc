@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/icon">
-        <file>icon.ico</file>
+        <file>serial_port_icon.png</file>
+        <file>settings.png</file>
     </qresource>
 </RCC>

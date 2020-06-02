@@ -121,6 +121,7 @@ void ComItem::initSignalSlotConn()
 ComItem::~ComItem()
 {
     startDisconnect();
+    delete (COMDeviceBase*)m_pDevice;
     delete m_pui;
 }
 
@@ -148,6 +149,16 @@ void ComItem::setDevice(QString a_strDeviceName)
 
     connect( &m_port, SIGNAL( error(QSerialPort::SerialPortError) )
              , this, SLOT( handleError(QSerialPort::SerialPortError) ) );
+
+
+    connect( this, SIGNAL( connected(void*,QString) )
+             , (QObject*)m_pDevice, SLOT( itemConnected(void*,QString) ) );
+    connect( this, SIGNAL( disconnected(void*) )
+             , (QObject*)m_pDevice, SLOT( itemDisconnect(void*) ) );
+
+
+    connect( m_pui->pushButton_RobotView, SIGNAL( clicked() )
+             , (QObject*)m_pDevice, SLOT( showRobotView() ) );
 
     //create new tab
     m_pui->tabWidget->addTab((QWidget*)m_pDevice,a_strDeviceName);
@@ -273,6 +284,7 @@ void ComItem::doConnect()
     if (m_port.open(QIODevice::ReadWrite)) {
         m_state = _state_connected;
         m_strComItemName = m_settings.name;
+        //отправим сигнал родителю
         emit connected(this,m_strComItemName);
         this->add2Log(tr("Connected to %1 : %2, %3, %4, %5, %6")
                       .arg(m_settings.name)
@@ -454,7 +466,7 @@ void ComItem::chooseConfigFile()
     QString strFile = QFileDialog::getOpenFileName(
                         this,
                         tr("Выбрать файл конфигурации"),
-                        "C://",
+                        QDir::current().absolutePath(),
                         "Файлы конигурации (*.conf)"
                         );
     m_pui->lineEdit_item_com_setup_current_config->setText(strFile);
@@ -466,7 +478,7 @@ void ComItem::saveConfigFile()
     QString strFile = QFileDialog::getSaveFileName(
                         this,
                         tr("Сохранить файл конигурации"),
-                        "C://",
+                        QDir::current().absolutePath(),
                         "Файлы конигурации (*.conf)"
                         );
 
@@ -500,14 +512,6 @@ void ComItem::loadConfigFile()
 {
     QStringList lstField;
     QStringList lstVal;
-    /*
-    QString strFile = QFileDialog::getOpenFileName(
-                        this,
-                        tr("Загрузить файл конигурации"),
-                        "C://",
-                        "Файлы конигурации (*.conf)"
-                        );
-*/
     QString strFile = m_pui->lineEdit_item_com_setup_current_config->text();
     QFile file(strFile);
     QMessageBox msgBoxError;
