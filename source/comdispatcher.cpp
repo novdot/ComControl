@@ -28,6 +28,10 @@ ComDispatcher::ComDispatcher(QWidget *parent)
             );
 
     m_pcontrol = new ComControl();
+
+    m_strAbout.setReadOnly(true);
+    m_strAbout.appendHtml("<h4>О проекте</h4><p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>");
+    m_strAbout.appendHtml("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">http://idea2art.ru</a>");
 }
 
 ComDispatcher::~ComDispatcher()
@@ -96,6 +100,11 @@ void ComDispatcher::on_actionOpen_link_editor_triggered()
 {
     if(m_pcontrol)
         m_pcontrol->show();
+}
+/*****************************************************************************/
+void ComDispatcher::on_actionAbout_triggered()
+{
+    m_strAbout.show();
 }
 /*****************************************************************************/
 void ComDispatcher::on_actionQuit_triggered()

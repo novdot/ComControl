@@ -47,8 +47,6 @@ SOURCES += \
     $$SOURCE_PATH/main.cpp \
     ../source/comcontrol.cpp \
     ../source/device/comdevicebase.cpp
-    #../source/device/comdevicegldboot.cpp
-    #../source/device/comdeviceinterface.cpp
 
 HEADERS += \
     $$SOURCE_PATH/comdispatcher.h \
@@ -56,7 +54,6 @@ HEADERS += \
     ../source/comcontrol.h \
     ../source/device/comdevicebase.h \
     ../source/device/comdeviceinterface.h
-    #../source/device/comdevicegldboot.h \
 
 FORMS += \
     $$SOURCE_PATH/comdispatcher.ui \

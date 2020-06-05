@@ -48,19 +48,19 @@ typedef struct com_settingsDef {
 
 /// Набор состояний
 typedef enum com_stateDef{
-    _state_unknown ///<
-    ,_state_setup
-    ,_state_connected
+    _state_unknown ///< неизвестное состояние
+    ,_state_setup ///< состояние настройки соединения
+    ,_state_connected ///< состояние установленного соединения
 }com_state;
 
-/// индексы вкладок
+//индексы вкладок
 #define __TAB_SETUPS_IND 0
 #define __TAB_DEVICE_IND 1
 
-///константы
+//константы
 #define __FIELD_MANUAL_BAUD "manual"
 
-///парсер
+//парсер
 #define __CONF_BAUD "BAUD"
 #define __CONF_DATABITS "DATABITS"
 #define __CONF_PARITY "PARITY"
@@ -71,9 +71,10 @@ typedef enum com_stateDef{
 #define __CONF_FIELD "*"
 #define __CONF_VALUE "="
 
+/// структура полей настроек
 typedef struct com_settings_fieldDef {
-    QString name;
-    int id;
+    QString name; ///< имя
+    int id; ///< идентификатор
 } com_settings_field;
 
 /*!
@@ -88,7 +89,9 @@ class ComItem : public QWidget
 public:
     ComItem(QWidget *parent = 0);
     ~ComItem();
-
+    /*!
+     * \brief получить настройки
+    */
     com_settings getSetups(){return m_settings;}
 
     /*!
@@ -108,8 +111,9 @@ public:
 public slots:
     /*!
      * \brief setDevice установить номер и тип устройства(COM1)
+     * \param[in] a_strDevName имя устройства
      */
-    void setDevice(QString);
+    void setDevice(QString a_strDevName);
     /*!
      * \brief Установить соединение с текущим портом
     */
@@ -150,19 +154,25 @@ public slots:
 signals:
     /*!
      * \brief Приход данных из порта
-     * \param[out] a_data Коненчный контейнер данных
+     * \param[in] a_data принятые данные
     */
     void readData(QByteArray a_data);
     /*!
      * \brief Ошибка обработчика порта
+     * \param[in] a_strerror строка с описанием ошибки
     */
     void error(QString a_strerror);
     /*!
      * \brief connected - сигнал установленного соединения.
-     * содержит строку с именем устройства и номером порта
+     * \param[in] ptr указатель на источник
+     * \param[in] name строка с именем устройства
      */
-    void connected(void*,QString);
-    void disconnected(void*);
+    void connected(void* ptr,QString name);
+    /*!
+     * \brief disconnected - сигнал разорванного соединения.
+     * \param[in] ptr указатель на источник
+     */
+    void disconnected(void* ptr);
 
 private:
     Ui::FormComItem *m_pui;
@@ -200,6 +210,7 @@ private:
     void initSignalSlotConn();
     /*!
      * \brief собирает структуру настроек. данные тянем из полей формы
+     * \return возвращает структуру настроек
     */
     com_settings readSetups();
 
@@ -224,18 +235,20 @@ private slots:
     /*!
      * \brief доступ к полю ручного ввода BaudRate
     */
-    void enableManualBaud(QString);
+    void enableManualBaud(QString a_strCurrentBaudSetup);
     /*!
      * \brief Слот блокировки выбранного элемента
      * Нужен для блокировки меню выбора Серийных портов в системе
      * Позволяет при подключении-отключении порта в системе обновлять список лоступных портов
      * и не производить переключения текущего порта(если он существует)
-     * 0 - снять блокировку
-     * 1 - установить блокировку
+     * \param[in] flag
+     * 0 - снять блокировку;
+     * 1 - установить блокировку;
     */
-    void lockCOMDevice(int);
+    void lockCOMDevice(int flag);
     /*!
      * \brief Слот обработки ошибок QSerialPort
+     * \param[in] error код ошибки
     */
     void handleError(QSerialPort::SerialPortError error);
     /*!
@@ -244,17 +257,27 @@ private slots:
     void readPort();
     /*!
      * \brief setComDescription слот установки описания выбранного порта
+     * \param[in] a_strDescript код ошибки
      */
-    void setComDescription(QString );
+    void setComDescription(QString a_strDescript);
     /*!
      * \brief openLog слот запуска лога для данного подключения
      */
-    void openLog( );
+    void openLog();
     /*!
      * \brief add2Log запись в лог данных
+     * \param[in] data строка в лог
      */
     void add2Log(QString data);
+    /*!
+     * \brief add2Log запись в лог входных данных
+     * \param[in] data строка в лог
+     */
     void add2LogInput(QByteArray data);
+    /*!
+     * \brief add2Log запись в лог выходных данных
+     * \param[in] data строка в лог
+     */
     void add2LogOutput(QByteArray data);
 };
 

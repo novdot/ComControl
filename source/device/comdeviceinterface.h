@@ -12,29 +12,32 @@
 /*!
     \defgroup COMDeviceInterface интерфейс устройства
     \ingroup COMDevice
-    \brief
+    \brief интерфейс устройства
 */
 ///@{
 
+
+///Форматы информации
 typedef enum device_formatDef{
-    _device_format_hex = 0
-    , _device_format_utf8 = 1
-    , _device_format_ascii = 2
+    _device_format_hex = 0 ///< информация - строка содержащая в 16-ой код
+    , _device_format_utf8 = 1 ///< информация тестовой формат в кодировке UTF-8
+    , _device_format_ascii = 2 ///< информация тестовой формат в кодировке ASCII
 }device_format;
 
-///структура
 #define COM_ROBOT_VALUE_DEFAULT "as is"
+
+///структура элемента робота
 typedef struct com_robot_srcDef{
-    void* device;
-    device_format format;
-    QString value;
+    void* device; ///< ссылка на устройство COMDevice
+    device_format format; ///< формат информации
+    QString value; ///< значение
 }com_robot_src;
 
 ///структура условия событие -> действие
 typedef struct com_robotDef {
-    QString name;
-    com_robot_src slave;
-    com_robot_src master;
+    QString name;  ///< имя условия
+    com_robot_src slave;  ///< элемент раб
+    com_robot_src master;  ///< элемент мастер
 }com_robot;
 
 /*!
@@ -50,7 +53,13 @@ public:
     COMDeviceInterface(QWidget *parent = nullptr): QWidget(parent) {
         m_lFormat = COMDeviceInterface::getFormatList();
     }
+    /*!
+        \brief получение текущего списка условий для робота
+     * */
     QList<com_robot> getRobotList(){return m_lRobot;}
+    /*!
+        \brief установка списка условий для робота
+     * */
     void setRobotList(QList<com_robot> list){
         m_lRobot = list;
 
@@ -69,6 +78,9 @@ public:
         updateSlaveControl();
     }
 
+    /*!
+        \brief получить список всех возможных форматов
+     * */
     static QList< QPair<int,QString> > getFormatList(){
         QList< QPair<int,QString> > lFormat;
         QPair<int,QString> format;
@@ -90,6 +102,9 @@ public slots:
      * \brief слот для обработки входящего пакета
     */
     virtual void receiveDataFromDevice(QByteArray a_data){Q_UNUSED(a_data)}
+    /*!
+     * \brief слот для отправки пакета
+    */
     virtual void sendDataToDevice(QByteArray a_data){Q_UNUSED(a_data)}
     /*!
      * \brief обновление отображения логики робота
@@ -99,10 +114,17 @@ public slots:
      * \brief обновление списка возможных команд
      */
     virtual void updateSlaveControl(){}
-
+    /*!
+     * \brief слот для обновления имени устройства в случае подключения устройства
+    */
     void itemConnected(void * a_pitem,QString a_strName){m_strCOMName=a_strName;}
+    /*!
+     * \brief слот для сброса имени устройства в случае отключения устройства
+    */
     void itemDisconnect(void * a_pitem){m_strCOMName="";}
-
+    /*!
+     * \brief получить текущее имя устройства
+    */
     QString getCOMName(){return m_strCOMName;}
 signals:
     /*!
@@ -116,13 +138,10 @@ signals:
     void slaveListUpdated();
 private:
 protected:
-    QString m_strCOMName;
-    //список событий
-    QList<com_robot> m_lRobot;
-    //подсписоки событий. Содержатся только события для слейва - быстрые команды на выдачу
-    QList<com_robot> m_lRobotSlave;
-    //списки возможных значений
-    QList< QPair<int,QString> > m_lFormat; //< формат входных/выходных данных
+    QString m_strCOMName; ///< имя устройства
+    QList<com_robot> m_lRobot; ///< список событий
+    QList<com_robot> m_lRobotSlave;///< подсписки событий. Содержатся только события для слейва - быстрые команды на выдачу
+    QList< QPair<int,QString> > m_lFormat; ///< списки возможных значений: формат входных/выходных данных
 };
 
 ///@}

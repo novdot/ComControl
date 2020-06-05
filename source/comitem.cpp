@@ -2,7 +2,6 @@
 #include "ui_formcomitem.h"
 
 #include "device/comdevicebase.h"
-#include "device/comdevicegldboot.h"
 
 #include <QMessageBox>
 #include <QTextCodec>

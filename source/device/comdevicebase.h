@@ -20,10 +20,11 @@ QT_END_NAMESPACE
 ///@{
 
 /*!
-    \brief класс устройства
+    \brief COMDeviceBase класс устройства
     \author dnovikov
     \date 2020 01 17
     \warning на стадии разработки
+    \todo robot list view
  * */
 class COMDeviceBase : public COMDeviceInterface
 {
@@ -31,9 +32,20 @@ class COMDeviceBase : public COMDeviceInterface
 public:
     COMDeviceBase(QWidget *parent = nullptr);
     ~COMDeviceBase();
-
-    static QByteArray convertStr2ByteArray(int,QString);
-    static QString convertByteArray2Str(int,QByteArray);
+    /*!
+     * \brief convertStr2ByteArray перевод строки в QByteArray
+     * \param[in] nFormatInd формат информации
+     * \param[in] data сообщение для перекодирования
+     * \return выходное сообщение
+     */
+    static QByteArray convertStr2ByteArray(int nFormatInd,QString data);
+    /*!
+     * \brief convertByteArray2Str переводит QByteArray в строку
+     * \param[in] nFormatInd формат информации
+     * \param[in] data сообщение для перекодирования
+     * \return выходное сообщение
+     */
+    static QString convertByteArray2Str(int nFormatInd,QByteArray data);
 
 public slots:
     void receiveDataFromDevice(QByteArray a_data);
@@ -43,11 +55,15 @@ public slots:
      * \brief robot обработка входного сообщения
      * проверяем список робота - если есть инструкция для текущего устройства, то
      * выполняем ее.
+     * \param[in] a_msg входное сообщение
      */
     void robot(QByteArray a_msg);
     void showRobotView();
     void updateSlaveControl();
 signals:
+    /*!
+     * \brief receive сигнал о полученном пакете
+     */
     void receive(QByteArray);
 
 private:
@@ -60,25 +76,26 @@ private:
 
 private slots:
     /*!
-     * \brief очистка поля принятых сообщений
+     * \brief clearRecText очистка поля принятых сообщений
      */
     void clearRecText();
     /*!
-     * \brief отправка сообщения из текстового поля в подключенный порт
+     * \brief sendText отправка сообщения из текстового поля в подключенный порт
      */
     void sendText();
     /*!
-     * \brief слот обработки событий таймера
+     * \brief timUpdateEvent слот обработки событий таймера
      */
     void timUpdateEvent();
     /*!
-     * \brief остановка таймера
+     * \brief timStop остановка таймера
      */
     void timStop();
     /*!
-     * \brief обработка выбора элемента из списка
+     * \brief doSlaveControl обработка выбора элемента из списка
+     * \param[in] a_pItem элемент из списка
      */
-    void doSlaveControl(QListWidgetItem *);
+    void doSlaveControl(QListWidgetItem * a_pItem);
 };
 
 ///@}
