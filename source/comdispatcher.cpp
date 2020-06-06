@@ -12,11 +12,12 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));
 
     QString strProjName = "COMControl";
-    ///TODO versions
-    QString strProjVersion = "1.0.0";
+    QString strProjVersion = tr("%1 %2")
+                                .arg(GIT_VERSION)
+                                .arg(GIT_TIMESTAMP);
 
     this->setWindowTitle(
-                QObject::trUtf8("%1 v.%2")
+                tr("%1 %2")
                 .arg(strProjName)
                 .arg(strProjVersion)
                 );
@@ -31,7 +32,9 @@ ComDispatcher::ComDispatcher(QWidget *parent)
 
     m_strAbout.setReadOnly(true);
     m_strAbout.appendHtml(tr("<h4>О проекте</h4>"));
-    m_strAbout.appendHtml(tr("COMControl ver.:%1 date:%2").arg(GIT_VERSION).arg(GIT_TIMESTAMP));
+    m_strAbout.appendHtml(tr("%1 %2")
+                          .arg(strProjName)
+                          .arg(strProjVersion));
     m_strAbout.appendHtml(tr("<p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>"));
     m_strAbout.appendHtml(tr("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">https://idea2art.ru/content_item#78</a>"));
 }
