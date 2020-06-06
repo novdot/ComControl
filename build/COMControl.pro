@@ -11,6 +11,11 @@ LIBS +=
 INCLUDEPATH +=
 DEPENDPATH +=
 ######################################################
+#version
+DEFINES += GIT_VERSION=\\\"$$system($$quote(git describe --tags))\\\"
+DEFINES += GIT_TIMESTAMP=\\\"$$system($$quote(git log -n 1 --format=format:\\\"%ai\\\"))\\\"
+
+######################################################
 #qt variables
 QT       += core gui serialport
 

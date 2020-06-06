@@ -30,8 +30,10 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     m_pcontrol = new ComControl();
 
     m_strAbout.setReadOnly(true);
-    m_strAbout.appendHtml("<h4>О проекте</h4><p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>");
-    m_strAbout.appendHtml("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">http://idea2art.ru</a>");
+    m_strAbout.appendHtml(tr("<h4>О проекте</h4>"));
+    m_strAbout.appendHtml(tr("COMControl ver.:%1 date:%2").arg(GIT_VERSION).arg(GIT_TIMESTAMP));
+    m_strAbout.appendHtml(tr("<p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>"));
+    m_strAbout.appendHtml(tr("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">https://idea2art.ru/content_item#78</a>"));
 }
 
 ComDispatcher::~ComDispatcher()
