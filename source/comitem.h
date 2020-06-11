@@ -153,6 +153,10 @@ public slots:
 
 signals:
     /*!
+     * \brief Данные отправлены
+    */
+    void sendedData();
+    /*!
      * \brief Приход данных из порта
      * \param[in] a_data принятые данные
     */

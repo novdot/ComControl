@@ -84,6 +84,24 @@ void ComItem::initSignalSlotConn()
 
     connect(&m_port, SIGNAL(readyRead())
             ,this ,SLOT(readPort()));
+
+    /*connect(&m_port, SIGNAL(readyRead())
+            ,this ,SLOT(statusRxOn()));
+    connect(&m_port, SIGNAL(readChannelFinished())
+            ,this ,SLOT(statusRxOff()));
+    connect(&m_port, SIGNAL(sendedData())
+            ,this ,SLOT(statusTxOn()));
+
+    connect(&m_port, SIGNAL(error())
+            ,this ,SLOT(statusErrorOn()));
+
+    connect(this, SIGNAL(connected(void*,QString))
+            ,this ,SLOT(statusConnectOn()));
+    connect(this, SIGNAL(disconnected(void*))
+            ,this ,SLOT(statusConnectOff()));
+    connect(this, SIGNAL(disconnected(void*))
+            ,this ,SLOT(statusErrorOff()));*/
+
     //connect(&m_port, &QSerialPort::readyRead, this, &ComItem::readPort);
 
     connect(m_pui->pushButton_item_com_control_connect, SIGNAL(clicked())
@@ -572,17 +590,22 @@ void ComItem::openLog()
 /*****************************************************************************/
 void ComItem::add2Log(QString data)
 {
-    m_log.appendHtml(data);
+    QDateTime time;
+    m_log.appendHtml(
+                QString("<font color=\"blue\">%1</font> %2")
+                .arg(time.currentDateTime().toString())
+                .arg(data)
+                );
 }
 /*****************************************************************************/
 void ComItem::add2LogInput(QByteArray data)
 {
     QString strData = data.toHex();
-    add2Log(QString("Input:0x%1").arg(strData));
+    add2Log(QString("<font color=\"green\">Input</font>:0x%1").arg(strData));
 }
 /*****************************************************************************/
 void ComItem::add2LogOutput(QByteArray data)
 {
     QString strData = data.toHex();
-    add2Log(QString("Output:0x%1").arg(strData));
+    add2Log(QString("<font color=\"green\">Output</font>:0x%1").arg(strData));
 }
