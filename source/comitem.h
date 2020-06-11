@@ -223,6 +223,11 @@ private:
     */
     void fillSetupFields();
 
+    /*!
+     * \brief
+    */
+    void initStatus();
+
 private slots:
     /*!
      * \brief загружаем конфигурацию настроек порта. обновляем поля формы загруженными настройками
@@ -283,6 +288,15 @@ private slots:
      * \param[in] data строка в лог
      */
     void add2LogOutput(QByteArray data);
+
+    void statusErrorOn(QSerialPort::SerialPortError);
+    void statusErrorOff();
+    void statusTxOn();
+    void statusTxOff();
+    void statusRxOn();
+    void statusRxOff();
+    void statusConnectOn();
+    void statusConnectOff();
 };
 
 ///@}

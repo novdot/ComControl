@@ -27,12 +27,67 @@ ComItem::ComItem(QWidget *parent)
     this->initSignalSlotConn();
     this->fillSetupFields();
     this->updateSetupFields();
+    this->initStatus();
 
     m_timService.setInterval(1000);
     m_timService.start();
 
     this->setDevice("Device");
 }
+
+/*****************************************************************************/
+void ComItem::initStatus()
+{
+    m_pui->label_status_connected->setPixmap(QPixmap(":icon/led_off.png"));
+    m_pui->label_status_rx->setPixmap(QPixmap(":icon/led_off.png"));
+    m_pui->label_status_tx->setPixmap(QPixmap(":icon/led_off.png"));
+    m_pui->label_status_error->setPixmap(QPixmap(":icon/led_off.png"));
+}
+
+/*****************************************************************************/
+void ComItem::statusErrorOn(QSerialPort::SerialPortError error)
+{
+    if(error==QSerialPort::NoError)
+        statusErrorOff();
+    else
+        m_pui->label_status_error->setPixmap(QPixmap(":icon/led_red.png"));
+}
+/*****************************************************************************/
+void ComItem::statusErrorOff()
+{
+    m_pui->label_status_error->setPixmap(QPixmap(":icon/led_off.png"));
+}
+/*****************************************************************************/
+void ComItem::statusTxOn()
+{
+    m_pui->label_status_tx->setPixmap(QPixmap(":icon/led_green.png"));
+}
+/*****************************************************************************/
+void ComItem::statusTxOff()
+{
+    m_pui->label_status_tx->setPixmap(QPixmap(":icon/led_off.png"));
+}
+/*****************************************************************************/
+void ComItem::statusRxOn()
+{
+    m_pui->label_status_rx->setPixmap(QPixmap(":icon/led_green.png"));
+}
+/*****************************************************************************/
+void ComItem::statusRxOff()
+{
+    m_pui->label_status_rx->setPixmap(QPixmap(":icon/led_off.png"));
+}
+/*****************************************************************************/
+void ComItem::statusConnectOn()
+{
+    m_pui->label_status_connected->setPixmap(QPixmap(":icon/led_green.png"));
+}
+/*****************************************************************************/
+void ComItem::statusConnectOff()
+{
+    m_pui->label_status_connected->setPixmap(QPixmap(":icon/led_off.png"));
+}
+
 /*****************************************************************************/
 #define __ADD_FIELD_TO_LIST(ID_X,NAME_X,LIST_X) \
     field.id = ID_X; \
@@ -85,22 +140,20 @@ void ComItem::initSignalSlotConn()
     connect(&m_port, SIGNAL(readyRead())
             ,this ,SLOT(readPort()));
 
-    /*connect(&m_port, SIGNAL(readyRead())
+    connect(&m_port, SIGNAL(readyRead())
             ,this ,SLOT(statusRxOn()));
-    connect(&m_port, SIGNAL(readChannelFinished())
-            ,this ,SLOT(statusRxOff()));
-    connect(&m_port, SIGNAL(sendedData())
+    connect(this, SIGNAL(sendedData())
             ,this ,SLOT(statusTxOn()));
 
-    connect(&m_port, SIGNAL(error())
-            ,this ,SLOT(statusErrorOn()));
+    connect(&m_port, SIGNAL(errorOccurred(QSerialPort::SerialPortError))
+            ,this ,SLOT(statusErrorOn(QSerialPort::SerialPortError)));
 
     connect(this, SIGNAL(connected(void*,QString))
             ,this ,SLOT(statusConnectOn()));
     connect(this, SIGNAL(disconnected(void*))
             ,this ,SLOT(statusConnectOff()));
     connect(this, SIGNAL(disconnected(void*))
-            ,this ,SLOT(statusErrorOff()));*/
+            ,this ,SLOT(statusErrorOff()));
 
     //connect(&m_port, &QSerialPort::readyRead, this, &ComItem::readPort);
 
@@ -382,6 +435,7 @@ void ComItem::doSetup(com_settings a_settings)
 void ComItem::sendData(const QByteArray &a_data)
 {
     m_port.write(a_data);
+    emit sendedData();
 }
 /*****************************************************************************/
 void ComItem::handleError(QSerialPort::SerialPortError error)
@@ -459,6 +513,8 @@ void ComItem::updateSetupFields()
     default:
         break;
     }
+    statusTxOff();
+    statusRxOff();
 }
 
 /*****************************************************************************/

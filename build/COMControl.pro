@@ -11,7 +11,9 @@ LIBS +=
 INCLUDEPATH +=
 DEPENDPATH +=
 ######################################################
-#version
+#version by git
+#git tag v1.0
+#always run qmake
 DEFINES += GIT_VERSION=\\\"$$system($$quote(git describe --tags))\\\"
 DEFINES += GIT_TIMESTAMP=\\\"$$system($$quote(git log -n 1 --format=format:\\\"%ai\\\"))\\\"
 
