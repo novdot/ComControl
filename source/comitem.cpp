@@ -159,6 +159,9 @@ void ComItem::setDevice(QString a_strDeviceName)
     connect( m_pui->pushButton_RobotView, SIGNAL( clicked() )
              , (QObject*)m_pDevice, SLOT( showRobotView() ) );
 
+    connect(this, SIGNAL(disconnected(void*))
+            , (QObject*)m_pDevice, SLOT(timStop())    );
+
     //create new tab
     m_pui->tabWidget->addTab((QWidget*)m_pDevice,a_strDeviceName);
 }
