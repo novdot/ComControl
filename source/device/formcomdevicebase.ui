@@ -96,12 +96,22 @@
       <item row="2" column="2" rowspan="3">
        <widget class="QListWidget" name="listWidget_slave_list"/>
       </item>
-      <item row="0" column="2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Key emulation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>Avilable command list</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEdit_keyemulation"/>
       </item>
      </layout>
     </widget>

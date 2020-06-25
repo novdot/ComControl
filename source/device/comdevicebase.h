@@ -68,11 +68,11 @@ signals:
 
 private:
     Ui::COMDeviceBase *m_pui;
-    QTimer *tim;
-    QByteArray m_byteArray;
-    int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесонечное кол-во
+    QTimer *tim; //< таймер для периодической отправки
+    QByteArray m_byteArray; //< контейнер для отправки
+    int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесконечное кол-во
 
-    QListWidget m_lRobotView;
+    QListWidget m_lRobotView; //< список событий для робота
 
 private slots:
     /*!

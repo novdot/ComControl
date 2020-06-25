@@ -2,6 +2,8 @@
 #include "ui_formcomdevicebase.h"
 
 #include <QTextCodec>
+#include <QMessageBox>
+#include <QDebug>
 
 COMDeviceBase::COMDeviceBase(QWidget *parent)
     : COMDeviceInterface(parent)
@@ -30,6 +32,9 @@ COMDeviceBase::COMDeviceBase(QWidget *parent)
 
     tim = new QTimer();
     connect(tim,SIGNAL(timeout()),SLOT(timUpdateEvent()));
+
+    //key emulation
+    m_pui->lineEdit_keyemulation->setText("");
 }
 
 COMDeviceBase::~COMDeviceBase()
@@ -167,6 +172,7 @@ void COMDeviceBase::sendText()
 {
     QByteArray byteArray;
     QString strText = "";
+    QString strKeyEmul = "";
     int nFormatInd = -1;
 
     //если процесс отправки сообщений запущен - повторное нажатие остановит цикл
@@ -183,7 +189,13 @@ void COMDeviceBase::sendText()
 
     //получим строку в зависимости от выбранного формата
     m_byteArray = convertStr2ByteArray(nFormatInd,strText);
-    /*
+
+    //дополним строку символами завершения
+    strKeyEmul = m_pui->lineEdit_keyemulation->text();
+    QByteArray array = convertStr2ByteArray(_device_format_hex,strKeyEmul);
+    m_byteArray.append(array);
+
+   /*
     //получим строку в зависимости от выбранного формата
     switch (nFormatInd) {
     case _device_format_utf8:
@@ -231,11 +243,11 @@ void COMDeviceBase::sendDataToDevice(QByteArray a_data)
 void COMDeviceBase::timStop()
 {
     tim->stop();
-    m_nSendCnt = 0;
     m_pui->pushButton_device_send->setText("send");
     m_pui->lineEdit_device_send_count->setEnabled(true);
     m_pui->lineEdit_device_send_period->setEnabled(true);
-    m_pui->lineEdit_device_send_count->setText(QString("%1").arg(m_nSendCnt));
+    //m_nSendCnt = 0;
+    //m_pui->lineEdit_device_send_count->setText(QString("%1").arg(m_nSendCnt));
     return;
 }
 /*****************************************************************************/
