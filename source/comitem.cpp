@@ -437,6 +437,7 @@ void ComItem::sendData(const QByteArray &a_data)
     //проверим есть ли вообще подключение. если нет - выведем предупреждение
     if(!isConnected()) {
         QMessageBox::critical(this, tr("Error"), "Connect port before send message!");
+        ((COMDeviceBase*)m_pDevice)->timStop();
         return;
     }
     m_port.write(a_data);

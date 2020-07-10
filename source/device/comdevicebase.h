@@ -60,6 +60,10 @@ public slots:
     void robot(QByteArray a_msg);
     void showRobotView();
     void updateSlaveControl();
+    /*!
+     * \brief timStop остановка таймера
+     */
+    void timStop();
 signals:
     /*!
      * \brief receive сигнал о полученном пакете
@@ -87,10 +91,6 @@ private slots:
      * \brief timUpdateEvent слот обработки событий таймера
      */
     void timUpdateEvent();
-    /*!
-     * \brief timStop остановка таймера
-     */
-    void timStop();
     /*!
      * \brief doSlaveControl обработка выбора элемента из списка
      * \param[in] a_pItem элемент из списка
