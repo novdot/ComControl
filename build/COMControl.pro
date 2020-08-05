@@ -52,21 +52,36 @@ SOURCES += \
     $$SOURCE_PATH/comdispatcher.cpp \
     $$SOURCE_PATH/comitem.cpp \
     $$SOURCE_PATH/main.cpp \
-    ../source/comcontrol.cpp \
-    ../source/device/comdevicebase.cpp
+    $$SOURCE_PATH/comcontrol.cpp \
+    $$SOURCE_PATH/comdevicebase.cpp
 
 HEADERS += \
     $$SOURCE_PATH/comdispatcher.h \
     $$SOURCE_PATH/comitem.h \
-    ../source/comcontrol.h \
-    ../source/device/comdevicebase.h \
-    ../source/device/comdeviceinterface.h
+    $$SOURCE_PATH/comcontrol.h \
+    $$SOURCE_PATH/comdevicebase.h \
+    $$SOURCE_PATH/comdeviceinterface.h \
+    $$SOURCE_PATH/setups.h
 
 FORMS += \
     $$SOURCE_PATH/comdispatcher.ui \
-    ../source/device/formcomdevicebase.ui \
-    ../source/formcomcontrol.ui \
-    ../source/formcomitem.ui
+    $$SOURCE_PATH/formcomdevicebase.ui \
+    $$SOURCE_PATH/formcomcontrol.ui \
+    $$SOURCE_PATH/formcomitem.ui
+
+CONFIG(accel_ato): {
+DEFINES += PROFILE_ACCELEROMETR_ATO
+SOURCES += $$SOURCE_PATH/device/formaccelato.cpp
+HEADERS += $$SOURCE_PATH/device/formaccelato.h
+FORMS += $$SOURCE_PATH/device/formaccelato.ui
+}
+
+CONFIG(at_commands): {
+DEFINES += PROFILE_AT_COMMANDS
+SOURCES +=
+HEADERS +=
+FORMS +=
+}
 
 ######################################################
 # Default rules for deployment.

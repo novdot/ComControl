@@ -1,7 +1,9 @@
 #include "comitem.h"
 #include "ui_formcomitem.h"
 
-#include "device/comdevicebase.h"
+#include "comdevicebase.h"
+
+#include "setups.h"
 
 #include <QMessageBox>
 #include <QTextCodec>
@@ -32,7 +34,7 @@ ComItem::ComItem(QWidget *parent)
     m_timService.setInterval(1000);
     m_timService.start();
 
-    this->setDevice("Device");
+    SETUPS_COMITEM_CONSTRUCTOR();
 }
 
 /*****************************************************************************/
@@ -148,6 +150,9 @@ void ComItem::initSignalSlotConn()
     connect(&m_port, SIGNAL(errorOccurred(QSerialPort::SerialPortError))
             ,this ,SLOT(statusErrorOn(QSerialPort::SerialPortError)));
 
+    connect( &m_port, SIGNAL( error(QSerialPort::SerialPortError) )
+             , this, SLOT( handleError(QSerialPort::SerialPortError) ) );
+
     connect(this, SIGNAL(connected(void*,QString))
             ,this ,SLOT(statusConnectOn()));
     connect(this, SIGNAL(disconnected(void*))
@@ -204,8 +209,10 @@ void ComItem::setDevice(QString a_strDeviceName)
         m_pDevice = nullptr;
     }
 
+    m_strDeviceName = a_strDeviceName;
+
     //create device
-    m_pDevice = new COMDeviceBase();
+    SETUPS_COMITEM_DEVICE();
 
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
@@ -214,18 +221,13 @@ void ComItem::setDevice(QString a_strDeviceName)
 
     connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
              , this, SLOT( add2LogOutput(QByteArray) ) );
-    connect( (QObject*)m_pDevice, SIGNAL( receive(QByteArray) )
+    connect( (QObject*)m_pDevice, SIGNAL( receiveDone(QByteArray) )
              , this, SLOT( add2LogInput(QByteArray) ) );
-
-    connect( &m_port, SIGNAL( error(QSerialPort::SerialPortError) )
-             , this, SLOT( handleError(QSerialPort::SerialPortError) ) );
-
 
     connect( this, SIGNAL( connected(void*,QString) )
              , (QObject*)m_pDevice, SLOT( itemConnected(void*,QString) ) );
     connect( this, SIGNAL( disconnected(void*) )
              , (QObject*)m_pDevice, SLOT( itemDisconnect(void*) ) );
-
 
     connect( m_pui->pushButton_RobotView, SIGNAL( clicked() )
              , (QObject*)m_pDevice, SLOT( showRobotView() ) );
@@ -234,7 +236,7 @@ void ComItem::setDevice(QString a_strDeviceName)
             , (QObject*)m_pDevice, SLOT(timStop())    );
 
     //create new tab
-    m_pui->tabWidget->addTab((QWidget*)m_pDevice,a_strDeviceName);
+    m_pui->tabWidget->addTab((QWidget*)m_pDevice,m_strDeviceName);
 }
 
 /*****************************************************************************/
@@ -356,7 +358,7 @@ void ComItem::doConnect()
     //if connect succsess - disable setups
     if (m_port.open(QIODevice::ReadWrite)) {
         m_state = _state_connected;
-        m_strComItemName = m_settings.name;
+        m_strComItemName = QString("%1 %2").arg(m_strDeviceName).arg(m_settings.name);
         //отправим сигнал родителю
         emit connected(this,m_strComItemName);
         this->add2Log(tr("Connected to %1 : %2, %3, %4, %5, %6")

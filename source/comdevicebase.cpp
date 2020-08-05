@@ -10,6 +10,10 @@ COMDeviceBase::COMDeviceBase(QWidget *parent)
     , m_pui(new Ui::COMDeviceBase)
 {
     m_pui->setupUi(this);
+
+    m_pErrMsg = new QMessageBox();
+
+    //gui format lists
     QList< QPair<int,QString> >::ConstIterator end;
     end = m_lFormat.constEnd();
     for(QList< QPair<int,QString> >::ConstIterator i = m_lFormat.constBegin(); i != end; ++i){
@@ -17,24 +21,36 @@ COMDeviceBase::COMDeviceBase(QWidget *parent)
         m_pui->comboBox_device_send_format->addItem((*i).second);
     }
 
+    //recieve
     connect(m_pui->pushButton_device_rec_clear,SIGNAL(clicked())
             , this, SLOT(clearRecText()));
 
+    //send
     connect(m_pui->pushButton_device_send,SIGNAL(clicked())
             , this, SLOT(sendText()));
+    connect(m_pui->pushButton_device_send_all,SIGNAL(clicked())
+            , this, SLOT(sendListAll()));
+
+    connect(m_pui->pushButton_device_send_update,SIGNAL(clicked())
+            , this, SLOT(updateCurrentCmd2List()));
+    connect(m_pui->pushButton_device_send_add2list,SIGNAL(clicked())
+            , this, SLOT(addCurrentCmd2List()));
+    connect(m_pui->pushButton_device_send_open_robot_list,SIGNAL(clicked())
+            , this, SLOT(openRobotList()));
 
     m_pui->lineEdit_device_send_count->setText("1");
 
-    connect(this,SIGNAL(slaveListUpdated()),this,SLOT(updateSlaveControl()));
-
-    connect(m_pui->listWidget_slave_list ,SIGNAL(itemClicked(QListWidgetItem *))
-                , this, SLOT(doSlaveControl(QListWidgetItem *)));
+    m_pui->lineEdit_device_send_position->setText("1");
 
     tim = new QTimer();
     connect(tim,SIGNAL(timeout()),SLOT(timUpdateEvent()));
 
-    //key emulation
-    m_pui->lineEdit_keyemulation->setText("");
+    //robot
+    connect(this,SIGNAL(slaveListUpdated()),this,SLOT(updateSlaveControl()));
+
+    connect(&m_lSlaveView ,SIGNAL(itemClicked(QListWidgetItem *))
+                , this, SLOT(doSlaveControl(QListWidgetItem *)));
+
 }
 
 COMDeviceBase::~COMDeviceBase()
@@ -48,47 +64,18 @@ void COMDeviceBase::receiveDataFromDevice(QByteArray a_data)
     int nFormatInd = m_pui->comboBox_device_rec_format->currentIndex();
     bool bIsNewLine = false;
     QString strData = "";
+    QString strCurrData = "";
     static bool m_bIgnoreNewLine = false;
 
     //получим строку в зависимости от выбранного формата
     strData = convertByteArray2Str(nFormatInd,a_data);
-    /*
-    switch (nFormatInd) {
-    case _device_format_utf8:
-        strData = QTextCodec::codecForName("UTF-8")->toUnicode(a_data);
-        break;
-    case _device_format_ascii:
-        strData = QTextCodec::codecForName("KOI8-R")->toUnicode(a_data);
-        break;
-    case _device_format_hex:
-    default:
-        strData = a_data.toHex();
-        break;
-    }*/
+
     //запишем строку
-    m_pui->plainTextEdit_device_rec->appendHtml(strData);
+    strCurrData = m_pui->textBrowser_device_rec->toPlainText();
+    m_pui->textBrowser_device_rec->setPlainText(QString("%1%2").arg(strCurrData).arg(strData));
 
-    emit receive(a_data);
+    emit receiveDone(a_data);
     this->robot(a_data);
-
-    /*
-    m_pui->plainTextEdit_device_rec->textCursor().insertHtml(strData);
-    //определим последний символ с целью перевода строки
-    if(  strData.at(strData.size()-1)=='\n' || strData.at(strData.size()-1)=='\r') {
-        bIsNewLine = true;
-    }
-    //если пришел всего один символ перевода строки и предыдущий символ также переводил строку - проигнорируем текущую итерацию
-    if(m_bIgnoreNewLine&&(strData.size()==1)&&bIsNewLine)
-        return;
-    //если есть последний символ на перевод строки и
-    //предыдущая итерация не переводила строку - перейдем на новую строчку
-    if( (!m_bIgnoreNewLine) && bIsNewLine){
-        m_pui->plainTextEdit_device_rec->appendHtml("");
-        m_bIgnoreNewLine = true;
-    } else {
-        m_pui->plainTextEdit_device_rec->moveCursor(QTextCursor::End);
-        m_bIgnoreNewLine = false;
-    }*/
 }
 /*****************************************************************************/
 QByteArray COMDeviceBase::convertStr2ByteArray(int nFormatInd, QString strText)
@@ -156,7 +143,6 @@ void COMDeviceBase::robot(QByteArray a_msg)
                             );
                 continue;
             }
-
         }
     }
 }
@@ -164,7 +150,7 @@ void COMDeviceBase::robot(QByteArray a_msg)
 /*****************************************************************************/
 void COMDeviceBase::clearRecText()
 {
-    m_pui->plainTextEdit_device_rec->clear();
+    m_pui->textBrowser_device_rec->clear();
 }
 
 /*****************************************************************************/
@@ -185,32 +171,10 @@ void COMDeviceBase::sendText()
     nFormatInd = m_pui->comboBox_device_send_format->currentIndex();
 
     //read text from text field and convert to selected format
-    strText = m_pui->plainTextEdit_device_send->toPlainText();
+    strText = m_pui->lineEdit_device_send->text();
 
     //получим строку в зависимости от выбранного формата
     m_byteArray = convertStr2ByteArray(nFormatInd,strText);
-
-    //дополним строку символами завершения
-    strKeyEmul = m_pui->lineEdit_keyemulation->text();
-    QByteArray array = convertStr2ByteArray(_device_format_hex,strKeyEmul);
-    m_byteArray.append(array);
-
-   /*
-    //получим строку в зависимости от выбранного формата
-    switch (nFormatInd) {
-    case _device_format_utf8:
-        //strText.fromUtf8( &byteArray );
-        byteArray = strText.toLocal8Bit();
-        break;
-    case _device_format_ascii:
-        break;
-    case _device_format_hex:
-    default:
-        strText.remove(QChar(' '));
-        byteArray = QByteArray::fromHex(strText.toUtf8());
-        break;
-    }
-    m_byteArray = byteArray;*/
 
     //проверяем поля ввода для отправки сообщений
     //если количество отправок > 1, то запускаем таймер с установленным периодом.
@@ -302,11 +266,12 @@ void COMDeviceBase::updateSlaveControl()
 
     QString rec = "";
 
-    m_pui->listWidget_slave_list->clear();
+    m_lSlaveView.clear();
 
+    //заполним slave list
     for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
         if( ((*i).slave.device != this) ) continue;
-        m_pui->listWidget_slave_list->addItem((*i).name);
+        m_lSlaveView.addItem((*i).name);
     }
 }
 /*****************************************************************************/
@@ -314,14 +279,16 @@ void COMDeviceBase::doSlaveControl(QListWidgetItem * item)
 {
     QString choosenText = item->text();
     //снимем подсветку со списка
-    for(int i=0;i<m_pui->listWidget_slave_list->count();i++) {
-        (m_pui->listWidget_slave_list->item(i))->setBackgroundColor(Qt::white);
+    /*for(int i=0;i<m_pui->tableWidget_device_send_list->rowcount();i++) {
+        (m_lSlaveView.item(i))->setBackgroundColor(Qt::white);
     }
     //подсветим выбранную комманду
-    item->setBackgroundColor(Qt::yellow);
+    //item->setBackgroundColor(Qt::yellow);
+    */
+    m_lSlaveView.hide();
 
     //очистим поле ввода комманды
-    m_pui->plainTextEdit_device_send->clear();
+    m_pui->lineEdit_device_send->clear();
 
     QList<com_robot>::ConstIterator begin;
     QList<com_robot>::ConstIterator end;
@@ -334,8 +301,34 @@ void COMDeviceBase::doSlaveControl(QListWidgetItem * item)
         if( ((*i).slave.value == COM_ROBOT_VALUE_DEFAULT) ) continue;
         //все нашли , элемент подходит данному ComDevice
         //установим нашу команду
-        m_pui->plainTextEdit_device_send->appendHtml((*i).slave.value);
+        m_pui->lineEdit_device_send->setText((*i).slave.value);
         m_pui->comboBox_device_send_format->setCurrentIndex((*i).slave.format);
         return;
     }
+}
+/*****************************************************************************/
+void COMDeviceBase::sendListAll()
+{
+    if(m_pui->tableWidget_device_send_list->rowCount() <= 0){
+        m_pErrMsg->setText(tr("Table commands was emptry!"));
+        m_pErrMsg->show();
+        return;
+    }
+}
+/*****************************************************************************/
+void COMDeviceBase::updateCurrentCmd2List()
+{
+    //search by position
+}
+/*****************************************************************************/
+void COMDeviceBase::addCurrentCmd2List()
+{
+    //new position
+
+    //read fields from table
+}
+/*****************************************************************************/
+void COMDeviceBase::openRobotList()
+{
+
 }

@@ -99,6 +99,10 @@ public:
 
 public slots:
     /*!
+     * \brief timStop остановка таймера
+     */
+    virtual void timStop(){}
+    /*!
      * \brief слот для обработки входящего пакета
     */
     virtual void receiveDataFromDevice(QByteArray a_data){Q_UNUSED(a_data)}
@@ -136,6 +140,11 @@ signals:
      * \brief сигнал обновления списка слейва, для обновления возможных команд от COMdevice
     */
     void slaveListUpdated();
+
+    /*!
+     * \brief receive сигнал о полученном пакете
+     */
+    void receiveDone(QByteArray);
 private:
 protected:
     QString m_strCOMName; ///< имя устройства

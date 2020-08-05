@@ -1,6 +1,8 @@
 #include "comdispatcher.h"
 #include "ui_comdispatcher.h"
 
+#include "setups.h"
+
 #include <QThread>
 
 /*****************************************************************************/
@@ -37,6 +39,8 @@ ComDispatcher::ComDispatcher(QWidget *parent)
                           .arg(strProjVersion));
     m_strAbout.appendHtml(tr("<p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>"));
     m_strAbout.appendHtml(tr("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">https://idea2art.ru/content_item#78</a>"));
+
+    SETUPS_DISPATCHER_CONSTRUCTOR();
 }
 
 ComDispatcher::~ComDispatcher()

@@ -1,7 +1,7 @@
 #include "comcontrol.h"
 #include "ui_formcomcontrol.h"
 
-#include "device/comdevicebase.h"
+#include "comdevicebase.h"
 
 #include <QFileDialog>
 

@@ -19,7 +19,7 @@
 #include <QTime>
 #include <QPlainTextEdit>
 
-#include "device/comdeviceinterface.h"
+#include "comdeviceinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormComItem; }
@@ -186,6 +186,8 @@ private:
     void* m_pDevice;
     QSerialPort m_port;
     QPlainTextEdit m_log;
+
+    QString m_strDeviceName;
 
     //имя объекта
     //нужно для однозначного определения , что данный объект подключен к порту

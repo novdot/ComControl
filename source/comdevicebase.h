@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QListWidgetItem>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class COMDeviceBase; }
@@ -50,25 +51,11 @@ public:
 public slots:
     void receiveDataFromDevice(QByteArray a_data);
     void sendDataToDevice(QByteArray a_data);
-
-    /*!
-     * \brief robot обработка входного сообщения
-     * проверяем список робота - если есть инструкция для текущего устройства, то
-     * выполняем ее.
-     * \param[in] a_msg входное сообщение
-     */
-    void robot(QByteArray a_msg);
     void showRobotView();
     void updateSlaveControl();
-    /*!
-     * \brief timStop остановка таймера
-     */
     void timStop();
+
 signals:
-    /*!
-     * \brief receive сигнал о полученном пакете
-     */
-    void receive(QByteArray);
 
 private:
     Ui::COMDeviceBase *m_pui;
@@ -77,8 +64,17 @@ private:
     int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесконечное кол-во
 
     QListWidget m_lRobotView; //< список событий для робота
+    QListWidget m_lSlaveView; //< список событий для робота - список команд
 
+    QMessageBox* m_pErrMsg;
 private slots:
+    /*!
+     * \brief robot обработка входного сообщения
+     * проверяем список робота - если есть инструкция для текущего устройства, то
+     * выполняем ее.
+     * \param[in] a_msg входное сообщение
+     */
+    void robot(QByteArray a_msg);
     /*!
      * \brief clearRecText очистка поля принятых сообщений
      */
@@ -96,6 +92,14 @@ private slots:
      * \param[in] a_pItem элемент из списка
      */
     void doSlaveControl(QListWidgetItem * a_pItem);
+
+    void sendListAll();
+
+    void updateCurrentCmd2List();
+
+    void addCurrentCmd2List();
+
+    void openRobotList();
 };
 
 ///@}

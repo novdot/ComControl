@@ -19,7 +19,7 @@
 #include <QMessageBox>
 
 #include "comitem.h"
-#include "device/comdeviceinterface.h"
+#include "comdeviceinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormComControl; }
