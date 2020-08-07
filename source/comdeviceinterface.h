@@ -130,6 +130,7 @@ public slots:
      * \brief получить текущее имя устройства
     */
     QString getCOMName(){return m_strCOMName;}
+
 signals:
     /*!
      * \brief сигнал пакета управления устройством

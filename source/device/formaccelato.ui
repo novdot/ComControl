@@ -73,7 +73,7 @@
        <widget class="QTableWidget" name="tableWidget_coef_func"/>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_coef_func">
+       <widget class="QPushButton" name="pushButton_coef_func_r">
         <property name="text">
          <string>Read from Buffer</string>
         </property>
