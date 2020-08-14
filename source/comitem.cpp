@@ -35,6 +35,17 @@ ComItem::ComItem(QWidget *parent)
     m_timService.start();
 
     SETUPS_COMITEM_CONSTRUCTOR();
+
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_DEVICE_DEFAULT);
+#if defined(DEVICE_ACCELEROMETR_ATO)
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_ACCELEROMETR_ATO);
+#endif
+#if defined(DEVICE_AT_COMMANDS)
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_AT_COMMANDS);
+#endif
+#if defined(DEVICE_DPB_COMMANDS)
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_DPB_COMMANDS);
+#endif
 }
 
 /*****************************************************************************/
@@ -212,7 +223,18 @@ void ComItem::setDevice(QString a_strDeviceName)
     m_strDeviceName = a_strDeviceName;
 
     //create device
-    SETUPS_COMITEM_DEVICE();
+    //SETUPS_COMITEM_DEVICE();
+
+    if(a_strDeviceName==SETUPS_NAME_DEVICE_DEFAULT) m_pDevice = new COMDeviceBase();
+#if defined(DEVICE_ACCELEROMETR_ATO)
+    if(a_strDeviceName==SETUPS_NAME_ACCELEROMETR_ATO) m_pDevice = new FormAccelAto();
+#endif
+#if defined(DEVICE_AT_COMMANDS)
+    if(a_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new COMDeviceBase();
+#endif
+#if defined(DEVICE_DPB_COMMANDS)
+    if(a_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new COMDeviceBase();
+#endif
 
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );

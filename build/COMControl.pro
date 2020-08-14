@@ -68,19 +68,44 @@ FORMS += \
     $$SOURCE_PATH/formcomdevicebase.ui \
     $$SOURCE_PATH/formcomcontrol.ui \
     $$SOURCE_PATH/formcomitem.ui
-
+######################################################
+CONFIG(device_all_enabled): {
+CONFIG += device_accel_ato
+CONFIG += device_at_commands
+CONFIG += device_dpb_commands
+}
+######################################################
 CONFIG(accel_ato): {
+CONFIG += device_accel_ato
 DEFINES += PROFILE_ACCELEROMETR_ATO
+}
+CONFIG(device_accel_ato): {
+DEFINES += DEVICE_ACCELEROMETR_ATO
 SOURCES += $$SOURCE_PATH/device/formaccelato.cpp
 HEADERS += $$SOURCE_PATH/device/formaccelato.h
 FORMS += $$SOURCE_PATH/device/formaccelato.ui
 }
-
+######################################################
 CONFIG(at_commands): {
 DEFINES += PROFILE_AT_COMMANDS
-SOURCES +=
-HEADERS +=
-FORMS +=
+CONFIG += device_at_commands
+}
+CONFIG(device_at_commands): {
+DEFINES += DEVICE_AT_COMMANDS
+SOURCES += $$SOURCE_PATH/device/formatcommands.cpp
+HEADERS += $$SOURCE_PATH/device/formatcommands.h
+FORMS += $$SOURCE_PATH/device/formatcommands.ui
+}
+######################################################
+CONFIG(dpb_commands): {
+DEFINES += PROFILE_DPB_COMMANDS
+CONFIG += device_dpb_commands
+}
+CONFIG(device_dpb_commands): {
+DEFINES += DEVICE_DPB_COMMANDS
+SOURCES += $$SOURCE_PATH/device/formdpbcommands.cpp
+HEADERS += $$SOURCE_PATH/device/formdpbcommands.h
+FORMS += $$SOURCE_PATH/device/formdpbcommands.ui
 }
 
 ######################################################
