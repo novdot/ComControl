@@ -62,6 +62,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 #else // PROFILE_DEFAULT
 #define SETUPS_DISPATCHER_CONSTRUCTOR() \
+    this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));\
     this->setWindowTitle(\
                 tr("%3 %1 %2")\
                 .arg(strProjName)\
