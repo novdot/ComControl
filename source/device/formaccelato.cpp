@@ -30,8 +30,8 @@
 /*****************************************************************************/
 void commands_append_float(QByteArray* a_Array,float a_fData)
 {
-    float _fModT = 0.0; //остаток;
-    float _fDivT = 0.0; //целая часть;
+    double _fModT = 0.0; //остаток;
+    double _fDivT = 0.0; //целая часть;
     uint16_t _nModT = 0;
     uint16_t _nDivT = 0;
     uint8_t _nSignT = 0;
@@ -354,8 +354,8 @@ void FormAccelAto::readTemp()
     data.append(COMMAND_CODE_TEMP_R);
 
     crc = calcCrc(data);
-    data.append((crc<<8)&0xFF);
-    data.append((crc<<0)&0xFF);
+    data.append((char)(crc<<8)&0xFF);
+    data.append((char)(crc<<0)&0xFF);
 
     sendDataToDevice(data);
 }
@@ -369,8 +369,8 @@ void FormAccelAto::readTempReg()
     data.append(COMMAND_CODE_TEMP_REG_R);
 
     crc = calcCrc(data);
-    data.append((crc<<8)&0xFF);
-    data.append((crc<<0)&0xFF);
+    data.append((char)(crc<<8)&0xFF);
+    data.append((char)(crc<<0)&0xFF);
 
     sendDataToDevice(data);
 }
@@ -384,8 +384,8 @@ void FormAccelAto::readTempCalibrationCoef()
     data.append(COMMAND_CODE_COEF_TEMP_R);
 
     crc = calcCrc(data);
-    data.append((crc<<8)&0xFF);
-    data.append((crc<<0)&0xFF);
+    data.append((char)(crc<<8)&0xFF);
+    data.append((char)(crc<<0)&0xFF);
 
     sendDataToDevice(data);
 }
@@ -413,8 +413,8 @@ void FormAccelAto::writeTempCalibrationCoef()
     APPEND_FDATA(&data,norm);
 
     crc = calcCrc(data);
-    data.append((crc<<8)&0xFF);
-    data.append((crc<<0)&0xFF);
+    data.append((char)(crc<<8)&0xFF);
+    data.append((char)(crc<<0)&0xFF);
 
     sendDataToDevice(data);
 }

@@ -501,7 +501,11 @@ void ComItem::setComDescription(QString  a_text)
                         .arg(info.portName())
                         .arg(info.description())
                         .arg(info.manufacturer())
+            #if(QT_MAJOR_VERSION>4 && QT_MINOR_VERSION>2)
                         .arg(info.serialNumber())
+            #else
+                        .arg("---")
+            #endif
                         .arg(info.systemLocation())
                         .arg(info.vendorIdentifier())
                         .arg(info.productIdentifier())

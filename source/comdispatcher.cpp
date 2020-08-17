@@ -11,7 +11,6 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     , ui(new Ui::ComDispatcher)
 {
     ui->setupUi(this);
-    this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));
 
     QString strProjName = "COMControl";
     QString strProjVersion = tr("%1 %2")
