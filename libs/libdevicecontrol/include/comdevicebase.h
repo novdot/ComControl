@@ -54,12 +54,12 @@ public slots:
     void showRobotView();
     void updateSlaveControl();
     void timStop();
+    void timUpdateEvent();
 
 signals:
 
 private:
     Ui::COMDeviceBase *m_pui;
-    QTimer *tim; //< таймер для периодической отправки
     QByteArray m_byteArray; //< контейнер для отправки
     int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесконечное кол-во
 
@@ -67,6 +67,7 @@ private:
     QListWidget m_lSlaveView; //< список событий для робота - список команд
 
     QMessageBox* m_pErrMsg;
+
 private slots:
     /*!
      * \brief robot обработка входного сообщения
@@ -83,10 +84,6 @@ private slots:
      * \brief sendText отправка сообщения из текстового поля в подключенный порт
      */
     void sendText();
-    /*!
-     * \brief timUpdateEvent слот обработки событий таймера
-     */
-    void timUpdateEvent();
     /*!
      * \brief doSlaveControl обработка выбора элемента из списка
      * \param[in] a_pItem элемент из списка

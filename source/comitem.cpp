@@ -245,6 +245,8 @@ void ComItem::setDevice(QString a_strDeviceName)
              , this, SLOT( add2LogOutput(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( receiveDone(QByteArray) )
              , this, SLOT( add2LogInput(QByteArray) ) );
+    connect( (QObject*)m_pDevice, SIGNAL( add2Log(QString) )
+             , this, SLOT( add2Log(QString) ) );
 
     connect( this, SIGNAL( connected(void*,QString) )
              , (QObject*)m_pDevice, SLOT( itemConnected(void*,QString) ) );

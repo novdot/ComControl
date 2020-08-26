@@ -15,13 +15,13 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #if defined(DEVICE_ACCELEROMETR_ATO)
-    #include "device/formaccelato.h"
+    #include <formaccelato.h>
 #endif
 #if defined(DEVICE_AT_COMMANDS)
-    #include "device/formatcommands.h"
+    #include <formatcommands.h>
 #endif
 #if defined(DEVICE_DPB_COMMANDS)
-    #include "device/formdpbcommands.h"
+    #include <formdpbcommands.h>
 #endif
 
 

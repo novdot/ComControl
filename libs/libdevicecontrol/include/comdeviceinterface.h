@@ -7,6 +7,7 @@
 #include <QList>
 #include <QByteArray>
 #include <QDebug>
+#include <QTimer>
 
 
 /*!
@@ -52,6 +53,9 @@ class COMDeviceInterface : public QWidget
 public:
     COMDeviceInterface(QWidget *parent = nullptr): QWidget(parent) {
         m_lFormat = COMDeviceInterface::getFormatList();
+
+        tim = new QTimer();
+        connect(tim,SIGNAL(timeout()),SLOT(timUpdateEvent()));
     }
     /*!
         \brief получение текущего списка условий для робота
@@ -101,7 +105,15 @@ public slots:
     /*!
      * \brief timStop остановка таймера
      */
-    virtual void timStop(){}
+    virtual void timStart(int period){tim->start(period);}
+    /*!
+     * \brief timStop остановка таймера
+     */
+    virtual void timStop(){tim->stop();}
+    /*!
+     * \brief timUpdateEvent слот обработки событий таймера
+     */
+    virtual void timUpdateEvent(){}
     /*!
      * \brief слот для обработки входящего пакета
     */
@@ -146,12 +158,18 @@ signals:
      * \brief receive сигнал о полученном пакете
      */
     void receiveDone(QByteArray);
+
+    /*!
+     * \brief Отправка в лог информации
+     */
+    void add2Log(QString);
 private:
 protected:
     QString m_strCOMName; ///< имя устройства
     QList<com_robot> m_lRobot; ///< список событий
     QList<com_robot> m_lRobotSlave;///< подсписки событий. Содержатся только события для слейва - быстрые команды на выдачу
-    QList< QPair<int,QString> > m_lFormat; ///< списки возможных значений: формат входных/выходных данных
+    QList< QPair<int,QString> > m_lFormat; ///< списки возможных значений: формат входных/выходных данных   
+    QTimer *tim; ///< таймер для периодической отправки
 };
 
 ///@}

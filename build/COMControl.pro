@@ -67,7 +67,36 @@ FORMS += \
     $$SOURCE_PATH/comdispatcher.ui \
     $$SOURCE_PATH/formcomcontrol.ui \
     $$SOURCE_PATH/formcomitem.ui
-
+######################################################
+CONFIG(device_all_enabled): {
+CONFIG += device_accel_ato
+CONFIG += device_at_commands
+CONFIG += device_dpb_commands
+}
+######################################################
+CONFIG(accel_ato): {
+CONFIG += device_accel_ato
+DEFINES += PROFILE_ACCELEROMETR_ATO
+}
+CONFIG(device_accel_ato): {
+DEFINES += DEVICE_ACCELEROMETR_ATO
+}
+######################################################
+CONFIG(at_commands): {
+DEFINES += PROFILE_AT_COMMANDS
+CONFIG += device_at_commands
+}
+CONFIG(device_at_commands): {
+DEFINES += DEVICE_AT_COMMANDS
+}
+######################################################
+CONFIG(dpb_commands): {
+DEFINES += PROFILE_DPB_COMMANDS
+CONFIG += device_dpb_commands
+}
+CONFIG(device_dpb_commands): {
+DEFINES += DEVICE_DPB_COMMANDS
+}
 ######################################################
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
