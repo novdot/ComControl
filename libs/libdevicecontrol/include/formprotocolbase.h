@@ -1,7 +1,7 @@
-#ifndef COMDEVICEBASE_H
-#define COMDEVICEBASE_H
+#ifndef FormProtocolBase_H
+#define FormProtocolBase_H
 
-#include "comdeviceinterface.h"
+#include "protocolinterface.h"
 
 #include <QObject>
 #include <QWidget>
@@ -10,29 +10,29 @@
 #include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class COMDeviceBase; }
+namespace Ui { class FormProtocolBase; }
 QT_END_NAMESPACE
 
 /*!
-    \defgroup COMDevice устройства
+    \defgroup ProtocolBase устройства
     \ingroup Dispatcher
     \brief содержит описание протоколов обмена.
 */
 ///@{
 
 /*!
-    \brief COMDeviceBase класс устройства
+    \brief FormProtocolBase класс устройства
     \author dnovikov
     \date 2020 01 17
     \warning на стадии разработки
     \todo robot list view
  * */
-class COMDeviceBase : public COMDeviceInterface
+class FormProtocolBase : public ProtocolInterface
 {
     Q_OBJECT
 public:
-    COMDeviceBase(QWidget *parent = nullptr);
-    ~COMDeviceBase();
+    FormProtocolBase(QWidget *parent = nullptr);
+    ~FormProtocolBase();
     /*!
      * \brief convertStr2ByteArray перевод строки в QByteArray
      * \param[in] nFormatInd формат информации
@@ -59,7 +59,7 @@ public slots:
 signals:
 
 private:
-    Ui::COMDeviceBase *m_pui;
+    Ui::FormProtocolBase *m_pui;
     QByteArray m_byteArray; //< контейнер для отправки
     int m_nSendCnt; //< оставшееся кол-во циклов отправки сообщения. если == -1 - бесконечное кол-во
 
@@ -100,4 +100,4 @@ private slots:
 };
 
 ///@}
-#endif // COMDEVICEBASE_H
+#endif // FormProtocolBase_H

@@ -19,7 +19,7 @@
 #include <QTime>
 #include <QPlainTextEdit>
 
-#include "comdeviceinterface.h"
+#include "protocolinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormComItem; }

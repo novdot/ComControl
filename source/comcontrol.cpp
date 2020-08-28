@@ -1,7 +1,7 @@
 #include "comcontrol.h"
 #include "ui_formcomcontrol.h"
 
-#include "comdevicebase.h"
+#include "formprotocolbase.h"
 
 #include <QFileDialog>
 
@@ -13,7 +13,7 @@ ComControl::ComControl(QWidget *parent)
     this->setWindowIcon(QIcon(":icon/settings.png"));
     this->setWindowTitle(tr("Setting","Window title"));
 
-    m_lFormat = COMDeviceBase::getFormatList();
+    m_lFormat = FormProtocolBase::getFormatList();
     QList< QPair<int,QString> >::ConstIterator end;
     end = m_lFormat.constEnd();
     for(QList< QPair<int,QString> >::ConstIterator i = m_lFormat.constBegin(); i != end; ++i){
@@ -60,11 +60,11 @@ void ComControl::chooseRobotLine(QListWidgetItem * a_pItem)
     a_pItem->setBackgroundColor(Qt::yellow);
 
     //найдем выбранную строку в списке
-    QList<com_robot>::ConstIterator begin;
-    QList<com_robot>::ConstIterator end;
+    QList<protocol_robot>::ConstIterator begin;
+    QList<protocol_robot>::ConstIterator end;
     begin = m_lRobot.constBegin();
     end = m_lRobot.constEnd();
-    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+    for(QList<protocol_robot>::ConstIterator i = begin; i != end; ++i){
         if((*i).name == choosenText) {
             //заполнем поля из  структуры
             m_pui->lineEdit_link_info_name->setText((*i).name);
@@ -87,7 +87,7 @@ void ComControl::chooseRobotLine(QListWidgetItem * a_pItem)
                 }
             }
             m_pui->comboBox_master_format->setCurrentIndex((*i).master.format);
-            if((*i).master.value==COM_ROBOT_VALUE_DEFAULT) {
+            if((*i).master.value==PROTOCOL_ROBOT_VALUE_DEFAULT) {
                 m_pui->lineEdit_master_value->setText("");
             } else {
                 m_pui->lineEdit_master_value->setText((*i).master.value);
@@ -111,7 +111,7 @@ void ComControl::chooseRobotLine(QListWidgetItem * a_pItem)
                 }
             }
             m_pui->comboBox_slave_format->setCurrentIndex((*i).slave.format);
-            if((*i).slave.value==COM_ROBOT_VALUE_DEFAULT) {
+            if((*i).slave.value==PROTOCOL_ROBOT_VALUE_DEFAULT) {
                 m_pui->lineEdit_slave_value->setText("");
             } else {
                 m_pui->lineEdit_slave_value->setText((*i).slave.value);
@@ -162,15 +162,15 @@ void ComControl::accept()
     begin = m_lItems.constBegin();
     end = m_lItems.constEnd();
     for(QList<ComItem*>::ConstIterator i = begin; i != end; ++i){
-        ((COMDeviceBase*)(*i)->getDevice())->setRobotList(m_lRobot);
+        ((FormProtocolBase*)(*i)->getDevice())->setRobotList(m_lRobot);
     }
 
     this->hide();
 }
 /*****************************************************************************/
-com_robot ComControl::completeLinkFromFields()
+protocol_robot ComControl::completeLinkFromFields()
 {
-    com_robot robotLine;
+    protocol_robot robotLine;
     QString temp = "";
     robotLine.name = m_pui->lineEdit_link_info_name->text();
     //MASTER
@@ -187,10 +187,10 @@ com_robot ComControl::completeLinkFromFields()
                 robotLine.master.device = (*i)->getDevice();
         }
     }
-    robotLine.master.format = (device_format)m_pui->comboBox_master_format->currentIndex();
+    robotLine.master.format = (protocol_format)m_pui->comboBox_master_format->currentIndex();
     temp = m_pui->lineEdit_master_value->text();
     if(temp=="")
-        robotLine.master.value = COM_ROBOT_VALUE_DEFAULT;
+        robotLine.master.value = PROTOCOL_ROBOT_VALUE_DEFAULT;
     else
         robotLine.master.value = temp;
 
@@ -208,10 +208,10 @@ com_robot ComControl::completeLinkFromFields()
                 robotLine.slave.device = (*i)->getDevice();
         }
     }
-    robotLine.slave.format = (device_format)m_pui->comboBox_slave_format->currentIndex();
+    robotLine.slave.format = (protocol_format)m_pui->comboBox_slave_format->currentIndex();
     temp = m_pui->lineEdit_slave_value->text();
     if(temp=="")
-        robotLine.slave.value = COM_ROBOT_VALUE_DEFAULT;
+        robotLine.slave.value = PROTOCOL_ROBOT_VALUE_DEFAULT;
     else
         robotLine.slave.value = temp;
 
@@ -221,11 +221,11 @@ com_robot ComControl::completeLinkFromFields()
 void ComControl::updateRobotList()
 {
     m_pui->listWidget_robot_list->clear();
-    QList<com_robot>::ConstIterator begin;
-    QList<com_robot>::ConstIterator end;
+    QList<protocol_robot>::ConstIterator begin;
+    QList<protocol_robot>::ConstIterator end;
     begin = m_lRobot.constBegin();
     end = m_lRobot.constEnd();
-    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+    for(QList<protocol_robot>::ConstIterator i = begin; i != end; ++i){
         m_pui->listWidget_robot_list->addItem((*i).name);
     }
 }
@@ -233,14 +233,14 @@ void ComControl::updateRobotList()
 void ComControl::addLink()
 {
     //прочитаем поля
-    com_robot robotLine = completeLinkFromFields();
+    protocol_robot robotLine = completeLinkFromFields();
 
     //проверим что название не дублируется
-    QList<com_robot>::ConstIterator begin;
-    QList<com_robot>::ConstIterator end;
+    QList<protocol_robot>::ConstIterator begin;
+    QList<protocol_robot>::ConstIterator end;
     begin = m_lRobot.constBegin();
     end = m_lRobot.constEnd();
-    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+    for(QList<protocol_robot>::ConstIterator i = begin; i != end; ++i){
         if((*i).name == robotLine.name){
             m_box.setText("В списке уже есть настройка с таким названием! Измените название на уникальное.");
             m_box.show();
@@ -275,12 +275,12 @@ void ComControl::changeLink()
     }
 
     //проверим что название не дублируется (исключая выбранное поле)
-    com_robot robotLine = completeLinkFromFields();
-    QList<com_robot>::ConstIterator begin;
-    QList<com_robot>::ConstIterator end;
+    protocol_robot robotLine = completeLinkFromFields();
+    QList<protocol_robot>::ConstIterator begin;
+    QList<protocol_robot>::ConstIterator end;
     begin = m_lRobot.constBegin();
     end = m_lRobot.constEnd();
-    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+    for(QList<protocol_robot>::ConstIterator i = begin; i != end; ++i){
         if( ((*i).name == robotLine.name) && (strChoosedLine != robotLine.name) ){
             m_box.setText("В списке уже есть настройка с таким названием и данное поле не выбрано! Измените название на уникальное.");
             m_box.exec();
@@ -335,11 +335,11 @@ void ComControl::save()
     //соберем все строки робота в строку
     QString strData;
 
-    QList<com_robot>::ConstIterator begin;
-    QList<com_robot>::ConstIterator end;
+    QList<protocol_robot>::ConstIterator begin;
+    QList<protocol_robot>::ConstIterator end;
     begin = m_lRobot.constBegin();
     end = m_lRobot.constEnd();
-    for(QList<com_robot>::ConstIterator i = begin; i != end; ++i){
+    for(QList<protocol_robot>::ConstIterator i = begin; i != end; ++i){
         strData.append(QString("%1%2%3").arg(__ROBOT_PARSER_FIELD_LINKNAME).arg(__ROBOT_PARSER_VALUE).arg((*i).name));
         strData.append(__ROBOT_PARSER_FIELD);
         strData.append(QString("%1%2%3").arg(__ROBOT_PARSER_FIELD_MASTER_FORM).arg(__ROBOT_PARSER_VALUE).arg((*i).master.format));
@@ -358,7 +358,7 @@ void ComControl::save()
 /*****************************************************************************/
 void ComControl::open()
 {
-    com_robot lineRobot;
+    protocol_robot lineRobot;
     QStringList lstLine;
     QStringList lstField;
     QStringList lstVal;
@@ -394,9 +394,9 @@ void ComControl::open()
 
         //для каждой линии будем чистить структуру
         lineRobot.name = "";
-        lineRobot.master.format = (device_format)0;
+        lineRobot.master.format = (protocol_format)0;
         lineRobot.master.value = "";
-        lineRobot.slave.format = (device_format)0;
+        lineRobot.slave.format = (protocol_format)0;
         lineRobot.slave.value = "";
 
         //в полях будем вычленять пары маркер-значение
@@ -407,9 +407,9 @@ void ComControl::open()
         for(QStringList::ConstIterator i = begin; i != end; ++i){
             lstVal = (*i).split(__ROBOT_PARSER_VALUE);
             if(lstVal[0]==__ROBOT_PARSER_FIELD_LINKNAME) lineRobot.name = lstVal[1];
-            if(lstVal[0]==__ROBOT_PARSER_FIELD_MASTER_FORM) lineRobot.master.format = (device_format)(lstVal[1]).toInt();
+            if(lstVal[0]==__ROBOT_PARSER_FIELD_MASTER_FORM) lineRobot.master.format = (protocol_format)(lstVal[1]).toInt();
             if(lstVal[0]==__ROBOT_PARSER_FIELD_MASTER_VAL) lineRobot.master.value = lstVal[1];
-            if(lstVal[0]==__ROBOT_PARSER_FIELD_SLAVE_FORM) lineRobot.slave.format = (device_format)(lstVal[1]).toInt();
+            if(lstVal[0]==__ROBOT_PARSER_FIELD_SLAVE_FORM) lineRobot.slave.format = (protocol_format)(lstVal[1]).toInt();
             if(lstVal[0]==__ROBOT_PARSER_FIELD_SLAVE_VAL){
                 lineRobot.slave.value = lstVal[1];
                 m_lRobot.append(lineRobot);

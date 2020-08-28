@@ -82,7 +82,7 @@
     m_pui->comboBox_item_com_setup_device->setCurrentText("");
 
 #define SETUPS_COMITEM_DEVICE() \
-    m_pDevice = new COMDeviceBase();
+    m_pDevice = new FormProtocolBase();
 
 #endif // PROFILE_DEFAULT
 /////////////////////////////////////////////////////////////////////////////////

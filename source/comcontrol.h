@@ -19,7 +19,7 @@
 #include <QMessageBox>
 
 #include "comitem.h"
-#include "comdeviceinterface.h"
+#include "protocolinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormComControl; }
@@ -64,10 +64,10 @@ public slots:
     */
     void setItemsList(QList<ComItem*> a_items);
 signals:
-    void setupRobot(QList<com_robot>);
+    void setupRobot(QList<protocol_robot>);
 private:
     Ui::FormComControl *m_pui;
-    QList<com_robot> m_lRobot;
+    QList<protocol_robot> m_lRobot;
     QList<ComItem*> m_lItems;
     QMessageBox m_box;
 
@@ -75,7 +75,7 @@ private:
     /*!
         \brief заполняем структуру из полей GUI
     */
-    com_robot completeLinkFromFields();
+    protocol_robot completeLinkFromFields();
 
 private slots:
     /*!

@@ -1,7 +1,7 @@
 #ifndef FORMACCELATO_H
 #define FORMACCELATO_H
 
-#include "comdeviceinterface.h"
+#include "protocolinterface.h"
 
 #include <QObject>
 #include <QWidget>
@@ -13,7 +13,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class FormAccelAto; }
 QT_END_NAMESPACE
 
-class FormAccelAto : public COMDeviceInterface
+class FormAccelAto : public ProtocolInterface
 {
     Q_OBJECT
 
@@ -43,6 +43,9 @@ private:
         \brief Отображение команды
     */
     void visualCmd(QByteArray a_dataCmd);
+
+    void commands_append_float(QByteArray* a_Array,float a_fData);
+    float commands_read_float(QByteArray a_Array,uint16_t ind);
 signals:
 public slots:
     void receiveDataFromDevice(QByteArray a_data);

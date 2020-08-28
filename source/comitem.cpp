@@ -1,7 +1,7 @@
 #include "comitem.h"
 #include "ui_formcomitem.h"
 
-#include "comdevicebase.h"
+#include "formprotocolbase.h"
 
 #include "setups.h"
 
@@ -207,7 +207,7 @@ void ComItem::initSignalSlotConn()
 ComItem::~ComItem()
 {
     startDisconnect();
-    delete (COMDeviceBase*)m_pDevice;
+    delete (FormProtocolBase*)m_pDevice;
     delete m_pui;
 }
 
@@ -216,7 +216,7 @@ void ComItem::setDevice(QString a_strDeviceName)
 {
     //delete old parser tab
     if(m_pDevice!=nullptr) {
-        delete (COMDeviceBase*)m_pDevice;
+        delete (FormProtocolBase*)m_pDevice;
         m_pDevice = nullptr;
     }
 
@@ -225,15 +225,15 @@ void ComItem::setDevice(QString a_strDeviceName)
     //create device
     //SETUPS_COMITEM_DEVICE();
 
-    if(a_strDeviceName==SETUPS_NAME_DEVICE_DEFAULT) m_pDevice = new COMDeviceBase();
+    if(a_strDeviceName==SETUPS_NAME_DEVICE_DEFAULT) m_pDevice = new FormProtocolBase();
 #if defined(DEVICE_ACCELEROMETR_ATO)
     if(a_strDeviceName==SETUPS_NAME_ACCELEROMETR_ATO) m_pDevice = new FormAccelAto();
 #endif
 #if defined(DEVICE_AT_COMMANDS)
-    if(a_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new COMDeviceBase();
+    if(a_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new FormProtocolBase();
 #endif
 #if defined(DEVICE_DPB_COMMANDS)
-    if(a_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new COMDeviceBase();
+    if(a_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new FormProtocolBase();
 #endif
 
     connect( this, SIGNAL( readData(QByteArray) )
@@ -463,7 +463,7 @@ void ComItem::sendData(const QByteArray &a_data)
     //проверим есть ли вообще подключение. если нет - выведем предупреждение
     if(!isConnected()) {
         QMessageBox::critical(this, tr("Error"), "Connect port before send message!");
-        ((COMDeviceBase*)m_pDevice)->timStop();
+        ((FormProtocolBase*)m_pDevice)->timStop();
         return;
     }
     m_port.write(a_data);
