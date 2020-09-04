@@ -29,7 +29,7 @@ typedef enum protocol_formatDef{
 
 ///структура элемента робота
 typedef struct protocol_robot_srcDef{
-    void* device; ///< ссылка на устройство COMDevice
+    void* device; ///< ссылка на устройство Protocol
     protocol_format format; ///< формат информации
     QString value; ///< значение
 }protocol_robot_src;
@@ -150,7 +150,7 @@ signals:
     void send(QByteArray);
 
     /*!
-     * \brief сигнал обновления списка слейва, для обновления возможных команд от COMdevice
+     * \brief сигнал обновления списка слейва, для обновления возможных команд от Protocol
     */
     void slaveListUpdated();
 

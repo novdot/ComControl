@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QTableWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormAccelAto; }
@@ -108,6 +109,10 @@ private slots:
         \brief Запись коэф калибровки температуры
     */
     void writeTempCalibrationCoef();
+    /*!
+        \brief Обработка изменения ячейки в таблице
+    */
+    void tableChangeCoef(QTableWidgetItem *item);
 
 };
 
