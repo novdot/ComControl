@@ -14,6 +14,13 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class FormAccelAto; }
 QT_END_NAMESPACE
 
+
+typedef enum{
+    _status_ready = 0
+    , _status_warning
+    , _status_error
+}ato_status_code;
+
 class FormAccelAto : public ProtocolInterface
 {
     Q_OBJECT
@@ -24,6 +31,8 @@ public:
 
 private:
     Ui::FormAccelAto *ui;
+
+    void setStatus(QString msg, ato_status_code code );
 
     uint16_t calcCrc(QByteArray a_data);
     bool checkCrc(QByteArray a_data);
@@ -93,6 +102,10 @@ private slots:
         \brief Запись коэффициенты термокалибровки в память
     */
     void writeCoefMem();
+    /*!
+        \brief
+    */
+    void testCoef();
     /*!
         \brief Чтение температуры пересчитанной
     */
