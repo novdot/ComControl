@@ -6,9 +6,11 @@
 #include <QObject>
 #include <QWidget>
 #include <QTimer>
+#include <QFile>
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <QDateTime>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FormAccelAto; }
@@ -31,6 +33,9 @@ public:
 
 private:
     Ui::FormAccelAto *ui;
+
+    bool m_bWrite2File;
+    QFile m_File;
 
     void setStatus(QString msg, ato_status_code code );
 
