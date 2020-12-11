@@ -58,15 +58,15 @@ SOURCES += \
     $$SOURCE_PATH/comcontrol.cpp
 
 HEADERS += \
-    $$SOURCE_PATH/comdispatcher.h \
-    $$SOURCE_PATH/comitem.h \
-    $$SOURCE_PATH/comcontrol.h \
-    $$SOURCE_PATH/setups.h
+    $$INCLUDE_PATH/comdispatcher.h \
+    $$INCLUDE_PATH/comitem.h \
+    $$INCLUDE_PATH/comcontrol.h \
+    $$INCLUDE_PATH/setups.h
 
 FORMS += \
-    $$SOURCE_PATH/comdispatcher.ui \
-    $$SOURCE_PATH/formcomcontrol.ui \
-    $$SOURCE_PATH/formcomitem.ui
+    $$FORMS_PATH/comdispatcher.ui \
+    $$FORMS_PATH/formcomcontrol.ui \
+    $$FORMS_PATH/formcomitem.ui
 ######################################################
 CONFIG(device_all_enabled): {
 CONFIG += device_accel_ato
