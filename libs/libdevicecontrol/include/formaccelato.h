@@ -37,6 +37,8 @@ private:
     bool m_bWrite2File;
     QFile m_File;
 
+    int m_nCoefTableWr;
+
     void setStatus(QString msg, ato_status_code code );
 
     uint16_t calcCrc(QByteArray a_data);
@@ -131,6 +133,14 @@ private slots:
         \brief Обработка изменения ячейки в таблице
     */
     void tableChangeCoef(QTableWidgetItem *item);
+    /*!
+        \brief Создать файл логов
+    */
+    void createTlmFile();
+    /*!
+        \brief Добавить в файл строку
+    */
+    void appendLine2File(float t,float x,float y, float z, float u_x, float u_y, float u_z);
 
 };
 

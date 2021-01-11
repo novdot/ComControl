@@ -34,6 +34,8 @@ ComItem::ComItem(QWidget *parent)
     m_timService.setInterval(1000);
     m_timService.start();
 
+    m_log.setWindowFlags(Qt::WindowStaysOnTopHint);
+
     SETUPS_COMITEM_CONSTRUCTOR();
 
     m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_DEVICE_DEFAULT);
@@ -677,16 +679,19 @@ end_value:;
 /*****************************************************************************/
 void ComItem::openLog()
 {
+    //m_log.hide(); //stay on top
     m_log.show();
 }
 /*****************************************************************************/
 void ComItem::add2Log(QString data)
 {
     QDateTime time;
+    if(m_log.blockCount()>1000) m_log.clear();
     m_log.appendHtml(
-                QString("<font color=\"blue\">%1</font> %2")
+                QString("%3 <font color=\"blue\">%1</font> %2")
                 .arg(time.currentDateTime().toString())
                 .arg(data)
+                .arg(m_log.blockCount())
                 );
 }
 /*****************************************************************************/
