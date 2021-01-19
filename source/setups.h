@@ -8,12 +8,15 @@
 #ifndef SETUPS_H
 #define SETUPS_H
 
-#define SETUPS_NAME_DEVICE_DEFAULT "DEFAULT"
-#define SETUPS_NAME_ACCELEROMETR_ATO "ACCELEROMETR ATO"
-#define SETUPS_NAME_AT_COMMANDS "AT COMMANDS"
-#define SETUPS_NAME_DPB_COMMANDS "DPB COMMANDS"
-
+#define SETUPS_DEFAULT_NAME         ("DEFAULT")
+#define SETUPS_DEFAULT_baudrate     ("9600")
+#define SETUPS_DEFAULT_databits     ("8")
+#define SETUPS_DEFAULT_parity       ("NoParity")
+#define SETUPS_DEFAULT_stopbits     ("OneStop")
+#define SETUPS_DEFAULT_flowcontrol  ("NoFlowControl")
+#define SETUPS_DEFAULT_CLASS        FormProtocolBase
 /////////////////////////////////////////////////////////////////////////////////
+//Include available devices
 #if defined(DEVICE_ACCELEROMETR_ATO)
     #include <formaccelato.h>
 #endif
@@ -24,66 +27,64 @@
     #include <formdpbcommands.h>
 #endif
 
-
 /////////////////////////////////////////////////////////////////////////////////
+//Current profile on user. Only 1 profile available on time
 #if defined(PROFILE_ACCELEROMETR_ATO) //PROFILE_ACCELEROMETR_ATO
-#define SETUPS_DISPATCHER_CONSTRUCTOR() \
-    this->setWindowTitle(\
-                tr("%3 %1 %2")\
-                .arg(strProjName)\
-                .arg(strProjVersion)\
-                .arg("Accelerometr ATO")\
-                );\
-    m_strAbout.appendHtml(tr(SETUPS_NAME_ACCELEROMETR_ATO)); \
-    this->createTab();
-
-#define SETUPS_COMITEM_CONSTRUCTOR() \
-    this->setDevice(SETUPS_NAME_ACCELEROMETR_ATO);\
-    m_pui->comboBox_item_com_setup_baudrate->setCurrentIndex(0);\
-    m_pui->lineEdit_item_com_setup_baudrate->setText("9600");\
-    m_pui->comboBox_item_com_setup_databits->setCurrentText("8");\
-    m_pui->comboBox_item_com_setup_parity->setCurrentText("NoParity");\
-    m_pui->comboBox_item_com_setup_stopbits->setCurrentText("OneStop");\
-    m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText("NoFlowControl");\
-    m_pui->comboBox_item_com_setup_device->setCurrentText("");
-
-#define SETUPS_COMITEM_DEVICE() \
-    m_pDevice = new FormAccelAto();
-/////////////////////////////////////////////////////////////////////////////////
+#define SETUPS_NAME         SETUPS_ACCELEROMETR_ATO_NAME
+#define SETUPS_baudrate     SETUPS_ACCELEROMETR_ATO_baudrate
+#define SETUPS_databits     SETUPS_ACCELEROMETR_ATO_databits
+#define SETUPS_parity       SETUPS_ACCELEROMETR_ATO_parity
+#define SETUPS_stopbits     SETUPS_ACCELEROMETR_ATO_stopbits
+#define SETUPS_flowcontrol  SETUPS_ACCELEROMETR_ATO_flowcontrol
+#define SETUPS_CLASS        SETUPS_ACCELEROMETR_ATO_CLASS
 #elif defined(PROFILE_AT_COMMANDS) //PROFILE_AT_COMMANDS
-#define SETUPS_DISPATCHER_CONSTRUCTOR() 0
-#define SETUPS_COMITEM_CONSTRUCTOR() 0
-#define SETUPS_COMITEM_DEVICE() 0
-/////////////////////////////////////////////////////////////////////////////////
+#define SETUPS_NAME         ("DEFAULT")
+#define SETUPS_baudrate     ("9600")
+#define SETUPS_databits     ("8")
+#define SETUPS_parity       ("NoParity")
+#define SETUPS_stopbits     ("OneStop")
+#define SETUPS_flowcontrol  ("NoFlowControl")
+#define SETUPS_CLASS        FormProtocolBase
 #elif defined(PROFILE_DPB_COMMANDS) //PROFILE_DPB_COMMANDS
-#define SETUPS_DISPATCHER_CONSTRUCTOR() 0
-#define SETUPS_COMITEM_CONSTRUCTOR() 0
-#define SETUPS_COMITEM_DEVICE() 0
-/////////////////////////////////////////////////////////////////////////////////
+#define SETUPS_NAME         ("DEFAULT")
+#define SETUPS_baudrate     ("9600")
+#define SETUPS_databits     ("8")
+#define SETUPS_parity       ("NoParity")
+#define SETUPS_stopbits     ("OneStop")
+#define SETUPS_flowcontrol  ("NoFlowControl")
+#define SETUPS_CLASS        FormProtocolBase
 #else // PROFILE_DEFAULT
+#define SETUPS_NAME         SETUPS_DEFAULT_NAME
+#define SETUPS_baudrate     SETUPS_DEFAULT_baudrate
+#define SETUPS_databits     SETUPS_DEFAULT_databits
+#define SETUPS_parity       SETUPS_DEFAULT_parity
+#define SETUPS_stopbits     SETUPS_DEFAULT_stopbits
+#define SETUPS_flowcontrol  SETUPS_DEFAULT_flowcontrol
+#define SETUPS_CLASS        SETUPS_DEFAULT_CLASS
+#endif // PROFILE_DEFAULT
+
+//this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));
 #define SETUPS_DISPATCHER_CONSTRUCTOR() \
-    this->setWindowIcon(QIcon(":icon/serial_port_icon.png"));\
     this->setWindowTitle(\
                 tr("%3 %1 %2")\
                 .arg(strProjName)\
                 .arg(strProjVersion)\
-                .arg("Default")\
+                .arg(tr(SETUPS_NAME))\
                 );\
-    m_strAbout.appendHtml(tr(SETUPS_NAME_DEVICE_DEFAULT)); \
+    m_strAbout.appendHtml(tr(SETUPS_NAME)); \
     this->createTab();
 
 #define SETUPS_COMITEM_CONSTRUCTOR() \
     m_pui->comboBox_item_com_setup_baudrate->setCurrentIndex(0);\
-    m_pui->lineEdit_item_com_setup_baudrate->setText("9600");\
-    m_pui->comboBox_item_com_setup_databits->setCurrentText("8");\
-    m_pui->comboBox_item_com_setup_parity->setCurrentText("NoParity");\
-    m_pui->comboBox_item_com_setup_stopbits->setCurrentText("OneStop");\
-    m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText("NoFlowControl");\
+    m_pui->lineEdit_item_com_setup_baudrate->setText(SETUPS_baudrate);\
+    m_pui->comboBox_item_com_setup_databits->setCurrentText(SETUPS_databits);\
+    m_pui->comboBox_item_com_setup_parity->setCurrentText(SETUPS_parity);\
+    m_pui->comboBox_item_com_setup_stopbits->setCurrentText(SETUPS_stopbits);\
+    m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText(SETUPS_flowcontrol);\
     m_pui->comboBox_item_com_setup_device->setCurrentText("");
 
 #define SETUPS_COMITEM_DEVICE() \
-    m_pDevice = new FormProtocolBase();
+    m_pDevice = new SETUPS_CLASS();
 
-#endif // PROFILE_DEFAULT
 /////////////////////////////////////////////////////////////////////////////////
 #endif // SETUPS_H

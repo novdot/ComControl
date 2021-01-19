@@ -299,6 +299,8 @@ private slots:
     void statusRxOff();
     void statusConnectOn();
     void statusConnectOff();
+
+    void setupsDeviceConnections(QString index);
 };
 
 ///@}

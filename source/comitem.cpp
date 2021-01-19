@@ -36,18 +36,22 @@ ComItem::ComItem(QWidget *parent)
 
     m_log.setWindowFlags(Qt::WindowStaysOnTopHint);
 
-    SETUPS_COMITEM_CONSTRUCTOR();
+    connect(m_pui->comboBox_item_com_setup_device, SIGNAL(currentIndexChanged(QString))
+            , this, SLOT(setupsDeviceConnections(QString)));
 
-    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_DEVICE_DEFAULT);
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_DEFAULT_NAME);
 #if defined(DEVICE_ACCELEROMETR_ATO)
-    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_ACCELEROMETR_ATO);
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_ACCELEROMETR_ATO_NAME);
 #endif
 #if defined(DEVICE_AT_COMMANDS)
-    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_AT_COMMANDS);
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_AT_COMMANDS_NAME);
 #endif
 #if defined(DEVICE_DPB_COMMANDS)
-    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_NAME_DPB_COMMANDS);
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_DPB_COMMANDS_NAME);
 #endif
+
+    //if compiled with profile
+    //SETUPS_COMITEM_CONSTRUCTOR();
 }
 
 /*****************************************************************************/
@@ -103,6 +107,45 @@ void ComItem::statusConnectOff()
     m_pui->label_status_connected->setPixmap(QPixmap(":icon/led_off.png"));
 }
 
+/*****************************************************************************/
+void ComItem::setupsDeviceConnections(QString a_index)
+{
+    QString strBaudrate(SETUPS_DEFAULT_baudrate);
+    QString strDatabits(SETUPS_DEFAULT_databits);
+    QString strParity(SETUPS_DEFAULT_parity);
+    QString strStopbits(SETUPS_DEFAULT_stopbits);
+    QString strFlowcontrol(SETUPS_DEFAULT_flowcontrol);
+
+    QString strCurrentDev = a_index;
+
+    if(strCurrentDev == SETUPS_DEFAULT_NAME) goto end;
+#if defined(DEVICE_ACCELEROMETR_ATO)
+    if(strCurrentDev == SETUPS_ACCELEROMETR_ATO_NAME) {
+        strBaudrate=(SETUPS_ACCELEROMETR_ATO_baudrate);
+        strDatabits=(SETUPS_ACCELEROMETR_ATO_databits);
+        strParity=(SETUPS_ACCELEROMETR_ATO_parity);
+        strStopbits=(SETUPS_ACCELEROMETR_ATO_stopbits);
+        strFlowcontrol=(SETUPS_ACCELEROMETR_ATO_flowcontrol);
+    }
+#endif
+#if defined(DEVICE_AT_COMMANDS)
+    if(strCurrentDev == SETUPS_DEFAULT_NAME) {
+
+    }
+#endif
+#if defined(DEVICE_DPB_COMMANDS)
+    if(strCurrentDev == SETUPS_DEFAULT_NAME) {
+
+    }
+#endif
+
+end:
+    m_pui->lineEdit_item_com_setup_baudrate->setText(strBaudrate);
+    m_pui->comboBox_item_com_setup_databits->setCurrentText(strDatabits);
+    m_pui->comboBox_item_com_setup_parity->setCurrentText(strParity);
+    m_pui->comboBox_item_com_setup_stopbits->setCurrentText(strStopbits);
+    m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText(strFlowcontrol);
+}
 /*****************************************************************************/
 #define __ADD_FIELD_TO_LIST(ID_X,NAME_X,LIST_X) \
     field.id = ID_X; \
@@ -227,9 +270,9 @@ void ComItem::setDevice(QString a_strDeviceName)
     //create device
     //SETUPS_COMITEM_DEVICE();
 
-    if(a_strDeviceName==SETUPS_NAME_DEVICE_DEFAULT) m_pDevice = new FormProtocolBase();
+    if(a_strDeviceName==SETUPS_DEFAULT_NAME) m_pDevice = new SETUPS_DEFAULT_CLASS();
 #if defined(DEVICE_ACCELEROMETR_ATO)
-    if(a_strDeviceName==SETUPS_NAME_ACCELEROMETR_ATO) m_pDevice = new FormAccelAto();
+    if(a_strDeviceName==SETUPS_ACCELEROMETR_ATO_NAME) m_pDevice = new SETUPS_ACCELEROMETR_ATO_CLASS();
 #endif
 #if defined(DEVICE_AT_COMMANDS)
     if(a_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new FormProtocolBase();

@@ -16,6 +16,13 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class FormAccelAto; }
 QT_END_NAMESPACE
 
+#define SETUPS_ACCELEROMETR_ATO_NAME        ("ACCELEROMETR ATO")
+#define SETUPS_ACCELEROMETR_ATO_baudrate    ("57600")
+#define SETUPS_ACCELEROMETR_ATO_databits    ("8")
+#define SETUPS_ACCELEROMETR_ATO_parity      ("NoParity")
+#define SETUPS_ACCELEROMETR_ATO_stopbits    ("OneStop")
+#define SETUPS_ACCELEROMETR_ATO_flowcontrol ("NoFlowControl")
+#define SETUPS_ACCELEROMETR_ATO_CLASS       FormAccelAto
 
 typedef enum{
     _status_ready = 0
@@ -102,13 +109,13 @@ private slots:
     */
     void writeCoefBuff();
     /*!
-        \brief Чтение коэффициенты термокалибровки из память
+        \brief Чтение коэффициенты термокалибровки из file
     */
-    void readCoefMem();
+    void readCoefFile();
     /*!
-        \brief Запись коэффициенты термокалибровки в память
+        \brief Запись коэффициенты термокалибровки в file
     */
-    void writeCoefMem();
+    void writeCoefFile();
     /*!
         \brief
     */
