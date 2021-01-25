@@ -147,8 +147,10 @@ private slots:
     /*!
         \brief Добавить в файл строку
     */
-    void appendLine2File(float t,float x,float y, float z, float u_x, float u_y, float u_z);
+    void appendLine2File(float t,float x,float y, float z,float fx,float fy, float fz, float u_x, float u_y, float u_z);
 
+    void readCoefFilter();
+    void writeCoefFilter();
 };
 
 #endif // FORMACCELATO_H
