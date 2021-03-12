@@ -151,6 +151,13 @@ private slots:
 
     void readCoefFilter();
     void writeCoefFilter();
+
+    void readCoefRudeCalibrationX();
+    void readCoefRudeCalibrationY();
+    void readCoefRudeCalibrationZ();
+    void writeCoefRudeCalibrationX();
+    void writeCoefRudeCalibrationY();
+    void writeCoefRudeCalibrationZ();
 };
 
 #endif // FORMACCELATO_H
