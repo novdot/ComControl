@@ -8,10 +8,10 @@ INCLUDE_PATH = $$ROOT_PATH/source
 LIB_PATH = $$ROOT_PATH/libs
 ######################################################
 #libs
-LIBS += -L$$LIB_PATH/libdevicecontrol/ -llibdevicecontrol
+LIBS += -L$$LIB_PATH/ -lDeviceControl
 
-INCLUDEPATH += $$LIB_PATH/libdevicecontrol/include
-DEPENDPATH += $$LIB_PATH/libdevicecontrol/include
+INCLUDEPATH += $$LIB_PATH/include
+DEPENDPATH += $$LIB_PATH/include
 ######################################################
 #version by git
 #git tag v1.0
@@ -55,7 +55,8 @@ SOURCES += \
     $$SOURCE_PATH/comdispatcher.cpp \
     $$SOURCE_PATH/comitem.cpp \
     $$SOURCE_PATH/main.cpp \
-    $$SOURCE_PATH/comcontrol.cpp
+    $$SOURCE_PATH/comcontrol.cpp \
+    ../../libDeviceControl/source/protocolinterface.cpp
 
 HEADERS += \
     $$INCLUDE_PATH/comdispatcher.h \
@@ -67,35 +68,39 @@ FORMS += \
     $$FORMS_PATH/comdispatcher.ui \
     $$FORMS_PATH/formcomcontrol.ui \
     $$FORMS_PATH/formcomitem.ui
+
 ######################################################
+# Подключаемые модули.
+# Поумолчанию всегда подключен модуль DeviceControl
+#
+######################################################
+CONFIG += device_accel_ato
+
 CONFIG(device_all_enabled): {
 CONFIG += device_accel_ato
 CONFIG += device_at_commands
-CONFIG += device_dpb_commands
+CONFIG += device_dpb
+CONFIG += device_gld
 }
 ######################################################
-CONFIG(accel_ato): {
-CONFIG += device_accel_ato
-DEFINES += PROFILE_ACCELEROMETR_ATO
-}
 CONFIG(device_accel_ato): {
+LIBS += -L$$LIB_PATH/ -lDeviceAto
 DEFINES += DEVICE_ACCELEROMETR_ATO
 }
 ######################################################
-CONFIG(at_commands): {
-DEFINES += PROFILE_AT_COMMANDS
-CONFIG += device_at_commands
-}
 CONFIG(device_at_commands): {
+LIBS += -L$$LIB_PATH/ -lDeviceAtCom
 DEFINES += DEVICE_AT_COMMANDS
 }
 ######################################################
-CONFIG(dpb_commands): {
-DEFINES += PROFILE_DPB_COMMANDS
-CONFIG += device_dpb_commands
+CONFIG(device_dpb): {
+LIBS += -L$$LIB_PATH/ -lDeviceDpb
+DEFINES += DEVICE_DPB
 }
-CONFIG(device_dpb_commands): {
-DEFINES += DEVICE_DPB_COMMANDS
+######################################################
+CONFIG(device_gld): {
+LIBS += -L$$LIB_PATH/ -lDeviceGld
+DEFINES += DEVICE_GLD
 }
 ######################################################
 # Default rules for deployment.

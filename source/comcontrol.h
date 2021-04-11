@@ -64,10 +64,10 @@ public slots:
     */
     void setItemsList(QList<ComItem*> a_items);
 signals:
-    void setupRobot(QList<protocol_robot>);
+    void setupRobot(QList<device_robot>);
 private:
     Ui::FormComControl *m_pui;
-    QList<protocol_robot> m_lRobot;
+    QList<device_robot> m_lRobot;
     QList<ComItem*> m_lItems;
     QMessageBox m_box;
 
@@ -75,7 +75,7 @@ private:
     /*!
         \brief заполняем структуру из полей GUI
     */
-    protocol_robot completeLinkFromFields();
+    device_robot completeLinkFromFields();
 
 private slots:
     /*!
