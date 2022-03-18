@@ -26,6 +26,9 @@
 #if defined(DEVICE_DPB_COMMANDS)
     #include <formdpbcommands.h>
 #endif
+#if defined(DEVICE_BOOT)
+    #include <formboot.h>
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////
 //Current profile on user. Only 1 profile available on time

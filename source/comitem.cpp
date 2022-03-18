@@ -49,6 +49,9 @@ ComItem::ComItem(QWidget *parent)
 #if defined(DEVICE_DPB_COMMANDS)
     m_pui->comboBox_item_com_setup_device->addItem(SETUPS_DPB_COMMANDS_NAME);
 #endif
+#if defined(DEVICE_BOOT)
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_BOOT_NAME);
+#endif
 
     //if compiled with profile
     //SETUPS_COMITEM_CONSTRUCTOR();
@@ -136,6 +139,15 @@ void ComItem::setupsDeviceConnections(QString a_index)
 #if defined(DEVICE_DPB_COMMANDS)
     if(strCurrentDev == SETUPS_DEFAULT_NAME) {
 
+    }
+#endif
+#if defined(DEVICE_BOOT)
+    if(strCurrentDev == SETUPS_BOOT_NAME) {
+        strBaudrate=(SETUPS_BOOT_baudrate);
+        strDatabits=(SETUPS_BOOT_databits);
+        strParity=(SETUPS_BOOT_parity);
+        strStopbits=(SETUPS_BOOT_stopbits);
+        strFlowcontrol=(SETUPS_BOOT_flowcontrol);
     }
 #endif
 
@@ -280,7 +292,9 @@ void ComItem::setDevice(QString a_strDeviceName)
 #if defined(DEVICE_DPB_COMMANDS)
     if(a_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new FormProtocolBase();
 #endif
-
+#if defined(DEVICE_BOOT)
+    if(a_strDeviceName==SETUPS_BOOT_NAME) m_pDevice = new SETUPS_BOOT_CLASS();
+#endif
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )

@@ -74,13 +74,16 @@ FORMS += \
 # Поумолчанию всегда подключен модуль DeviceControl
 #
 ######################################################
-CONFIG += device_accel_ato
+CONFIG += \
+    device_boot
+    #device_accel_ato
 
 CONFIG(device_all_enabled): {
 CONFIG += device_accel_ato
 CONFIG += device_at_commands
 CONFIG += device_dpb
 CONFIG += device_gld
+CONFIG += device_boot
 }
 ######################################################
 CONFIG(device_accel_ato): {
@@ -101,6 +104,11 @@ DEFINES += DEVICE_DPB
 CONFIG(device_gld): {
 LIBS += -L$$LIB_PATH/ -lDeviceGld
 DEFINES += DEVICE_GLD
+}
+######################################################
+CONFIG(device_boot): {
+LIBS += -L$$LIB_PATH/ -lDeviceBoot
+DEFINES += DEVICE_BOOT
 }
 ######################################################
 # Default rules for deployment.
