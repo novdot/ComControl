@@ -26,7 +26,7 @@ QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++11 console
 
 TARGET = comcontrol
 
@@ -56,7 +56,7 @@ SOURCES += \
     $$SOURCE_PATH/comitem.cpp \
     $$SOURCE_PATH/main.cpp \
     $$SOURCE_PATH/comcontrol.cpp \
-    ../../libDeviceControl/source/protocolinterface.cpp
+    #../../libDeviceControl/source/protocolinterface.cpp
 
 HEADERS += \
     $$INCLUDE_PATH/comdispatcher.h \
@@ -117,8 +117,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 win32: {
-        RC_ICONS = ../res/serial_port_icon.ico
-        RC_FILE += ../res/res.rc
+    RC_ICONS = ../res/serial_port_icon.ico
+    RC_FILE += ../res/res.rc
 }
 
 RESOURCES += \

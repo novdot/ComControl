@@ -49,6 +49,11 @@ ComDispatcher::~ComDispatcher()
 }
 
 /*****************************************************************************/
+void ComDispatcher::console(QList< QPair<QString,QString > > commands)
+{
+    m_lpitems.at(0)->console(commands);
+}
+/*****************************************************************************/
 void ComDispatcher::createTab()
 {
     ComItem * pwgt = new ComItem();

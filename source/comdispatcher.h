@@ -37,6 +37,10 @@ public:
 
 public slots:
     /*!
+        \brief Обработчик console.
+    */
+    void console(QList< QPair<QString,QString > > commands);
+    /*!
         \brief Обработчик создания новой вкладки и объекта.
     */
     void createTab();

@@ -58,6 +58,17 @@ ComItem::ComItem(QWidget *parent)
 }
 
 /*****************************************************************************/
+void ComItem::console(QList< QPair<QString,QString > > commands)
+{
+    //get COM params
+
+    //if get params try to connect
+    //startConnect();
+
+    //send to device commands
+
+}
+/*****************************************************************************/
 void ComItem::initStatus()
 {
     m_pui->label_status_connected->setPixmap(QPixmap(":icon/led_off.png"));

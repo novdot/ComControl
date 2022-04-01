@@ -1,6 +1,8 @@
 #include "comdispatcher.h"
+#include "formprotocolbase.h"
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 
 #include <stdio.h>
@@ -104,9 +106,63 @@ void float_dbg()
 
 int main(int argc, char *argv[])
 {
+    QList< QPair<QString,QString > > console;
+    QString cmd;
+    QStringList lst_cmd;
+    QPair<QString,QString > one_line;
+
     //float_dbg();
-    QApplication a(argc, argv);
-    ComDispatcher w;
-    w.show();
-    return a.exec();
+
+    //fill command line
+    for(int i=0; i<argc; i++ ){
+        cmd = QString((const char*)argv[i]);
+        lst_cmd = cmd.split('=');
+        switch(lst_cmd.size()){
+        case 0:
+            qDebug()<<"index:"<<i<<" params:"<<cmd;
+            break;
+
+        case 1:
+            one_line.first = lst_cmd.at(0);
+            one_line.second = QString("");
+            console.append(one_line);
+            qDebug()<<" param:" <<one_line.first<<" with value:" <<one_line.second;
+            break;
+
+        case 2:
+            one_line.first = lst_cmd.at(0);
+            one_line.second = lst_cmd.at(1);
+            console.append(one_line);
+            qDebug()<<" param:" <<one_line.first<<" with value:" <<one_line.second;
+            break;
+
+        default:
+            qDebug()<<"index:"<<i<<" params:"<<cmd;
+            break;
+        }
+    }
+    //check command line
+    bool isShow = true;
+    for(int i=0; i<console.count(); i++ ){
+        one_line = console.at(i);
+        if(one_line.first==CONSOLE_CMD_WINDOW){
+            isShow = false;
+        }
+        qDebug()<<" param:" <<one_line.first;
+    }
+
+    if(isShow) {
+        QApplication a(argc, argv);
+        ComDispatcher w;
+        printf("app mode");
+        w.show();
+        return a.exec();
+    }else{
+        QCoreApplication a(argc, argv);
+        ComDispatcher w;
+        printf("console mode");
+        //for(;;);
+        return a.exec();
+    }
+    return 0;
 }

@@ -89,6 +89,9 @@ class ComItem : public QWidget
 public:
     ComItem(QWidget *parent = 0);
     ~ComItem();
+
+    void console(QList< QPair<QString,QString > > commands);
+
     /*!
      * \brief получить настройки
     */
