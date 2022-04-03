@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
         QCoreApplication a(argc, argv);
         ComDispatcher w;
         printf("console mode");
-        //for(;;);
+        w.console(console);
         return a.exec();
     }
     return 0;

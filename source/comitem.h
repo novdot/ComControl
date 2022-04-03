@@ -67,6 +67,7 @@ typedef enum com_stateDef{
 #define __CONF_STOPBITS "STOPBITS"
 #define __CONF_FLOWCONTROL "FLOWCONTROL"
 #define __CONF_DEVICE "DEVICE"
+#define __CONF_COM "COM"
 
 #define __CONF_FIELD "*"
 #define __CONF_VALUE "="
@@ -237,7 +238,8 @@ private slots:
     /*!
      * \brief загружаем конфигурацию настроек порта. обновляем поля формы загруженными настройками
     */
-    void loadConfigFile();
+    void openConfigFile();
+    void loadConfigFile(QString filepath);
     /*!
      * \brief сохраняем файл конфигурации настроек порта. данные тянем из полей формы
     */

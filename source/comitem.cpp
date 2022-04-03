@@ -60,12 +60,23 @@ ComItem::ComItem(QWidget *parent)
 /*****************************************************************************/
 void ComItem::console(QList< QPair<QString,QString > > commands)
 {
+    QPair<QString,QString > one_line;
+
     //get COM params
+    //check command line
+    for(int i=0; i<commands.count(); i++ ){
+        one_line = commands.at(i);
+        if(one_line.first==CONSOLE_CMD_SETUPS){
+            loadConfigFile(one_line.second);
+        }
+        //qDebug()<<" param:" <<commands.first;
+    }
 
     //if get params try to connect
-    //startConnect();
+    startConnect();
 
     //send to device commands
+    m_pDevice->console(commands);
 
 }
 /*****************************************************************************/
@@ -686,19 +697,26 @@ void ComItem::saveConfigFile()
     strData.append(QString("%1%2%3").arg(__CONF_FLOWCONTROL).arg(__CONF_VALUE).arg(m_pui->comboBox_item_com_setup_flowcontrol->currentText()));
     strData.append(__CONF_FIELD);
     strData.append(QString("%1%2%3").arg(__CONF_DEVICE).arg(__CONF_VALUE).arg(m_pui->comboBox_item_com_setup_device->currentText()));
+    strData.append(__CONF_FIELD);
+    strData.append(QString("%1%2%3").arg(__CONF_COM).arg(__CONF_VALUE).arg(m_pui->comboBox_item_com_choose->currentText()));
 
     file.write(strData.toUtf8());
 }
 /*****************************************************************************/
-void ComItem::loadConfigFile()
+void ComItem::openConfigFile()
+{
+    QString strFile = m_pui->lineEdit_item_com_setup_current_config->text();
+    loadConfigFile(strFile);
+}
+void ComItem::loadConfigFile(QString filepath)
 {
     QStringList lstField;
     QStringList lstVal;
-    QString strFile = m_pui->lineEdit_item_com_setup_current_config->text();
-    QFile file(strFile);
+
+    QFile file(filepath);
     QMessageBox msgBoxError;
     if(!file.open(QIODevice::ReadOnly)) {
-        msgBoxError.setText(QString("Cant open file (%1)!").arg(strFile));
+        msgBoxError.setText(QString("Cant open file (%1)!").arg(filepath));
         msgBoxError.exec();
     }
     //read string
@@ -738,6 +756,10 @@ void ComItem::loadConfigFile()
         }
         if(lstVal[0]==__CONF_DEVICE) {
             m_pui->comboBox_item_com_setup_device->setCurrentText(lstVal[1]);
+            goto end_value;
+        }
+        if(lstVal[0]==__CONF_COM) {
+            m_pui->comboBox_item_com_choose->setCurrentText(lstVal[1]);
             goto end_value;
         }
 end_value:;
