@@ -67,16 +67,30 @@ void ComItem::console(QList< QPair<QString,QString > > commands)
     for(int i=0; i<commands.count(); i++ ){
         one_line = commands.at(i);
         if(one_line.first==CONSOLE_CMD_SETUPS){
+            qDebug()<<"Load COM port params from file:"<<one_line.second;
             loadConfigFile(one_line.second);
         }
-        //qDebug()<<" param:" <<commands.first;
     }
 
     //if get params try to connect
+    qDebug()<<"Start connect to COM port...";
     startConnect();
 
     //send to device commands
-    m_pDevice->console(commands);
+    if(m_strDeviceName==SETUPS_DEFAULT_NAME) ((SETUPS_DEFAULT_CLASS*)m_pDevice)->console(commands);
+#if defined(DEVICE_ACCELEROMETR_ATO)
+    if(m_strDeviceName==SETUPS_ACCELEROMETR_ATO_NAME) m_pDevice = new SETUPS_ACCELEROMETR_ATO_CLASS();
+#endif
+#if defined(DEVICE_AT_COMMANDS)
+    if(m_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new FormProtocolBase();
+#endif
+#if defined(DEVICE_DPB_COMMANDS)
+    if(m_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new FormProtocolBase();
+#endif
+#if defined(DEVICE_BOOT)
+    if(m_strDeviceName==SETUPS_BOOT_NAME) ((SETUPS_BOOT_CLASS*)m_pDevice)->console(commands);
+#endif
+
 
 }
 /*****************************************************************************/
@@ -229,8 +243,8 @@ void ComItem::initSignalSlotConn()
     connect(m_pui->comboBox_item_com_choose,SIGNAL(currentIndexChanged(QString ))
             ,this ,SLOT(setComDescription(QString )));
 
-    connect(&m_port, SIGNAL(readyRead())
-            ,this ,SLOT(readPort()));
+    /*connect(&m_port, SIGNAL(readyRead())
+            ,this ,SLOT(readPort()));*/
 
     connect(&m_port, SIGNAL(readyRead())
             ,this ,SLOT(statusRxOn()));
@@ -274,7 +288,7 @@ void ComItem::initSignalSlotConn()
     connect(m_pui->pushButton_item_com_setup_choose_config, SIGNAL(clicked())
             , this, SLOT(chooseConfigFile()));
     connect(m_pui->pushButton_item_com_setup_load_file, SIGNAL(clicked())
-            , this, SLOT(loadConfigFile()));
+            , this, SLOT(openConfigFile()));
     connect(m_pui->pushButton_item_com_setup_save_file, SIGNAL(clicked())
             , this, SLOT(saveConfigFile()));
 
@@ -304,23 +318,30 @@ void ComItem::setDevice(QString a_strDeviceName)
     //create device
     //SETUPS_COMITEM_DEVICE();
 
-    if(a_strDeviceName==SETUPS_DEFAULT_NAME) m_pDevice = new SETUPS_DEFAULT_CLASS();
+#define DEVICE_OBJ  QObject*
+
+    if(m_strDeviceName==SETUPS_DEFAULT_NAME) m_pDevice = new SETUPS_DEFAULT_CLASS();
 #if defined(DEVICE_ACCELEROMETR_ATO)
-    if(a_strDeviceName==SETUPS_ACCELEROMETR_ATO_NAME) m_pDevice = new SETUPS_ACCELEROMETR_ATO_CLASS();
+    if(m_strDeviceName==SETUPS_ACCELEROMETR_ATO_NAME) m_pDevice = new SETUPS_ACCELEROMETR_ATO_CLASS();
 #endif
 #if defined(DEVICE_AT_COMMANDS)
-    if(a_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new FormProtocolBase();
+    if(m_strDeviceName==SETUPS_NAME_AT_COMMANDS) m_pDevice = new FormProtocolBase();
 #endif
 #if defined(DEVICE_DPB_COMMANDS)
-    if(a_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new FormProtocolBase();
+    if(m_strDeviceName==SETUPS_NAME_DPB_COMMANDS) m_pDevice = new FormProtocolBase();
 #endif
 #if defined(DEVICE_BOOT)
-    if(a_strDeviceName==SETUPS_BOOT_NAME) m_pDevice = new SETUPS_BOOT_CLASS();
+    if(m_strDeviceName==SETUPS_BOOT_NAME) m_pDevice = new SETUPS_BOOT_CLASS();
 #endif
+
+    ((DeviceInterface*)m_pDevice)->m_pHardware = (void*)(&m_port);
+
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
              , this, SLOT( sendData(QByteArray) ) );
+    connect( (QObject*)m_pDevice, SIGNAL( setRcMode(device_rcMode) )
+             , this, SLOT( setRcMode(device_rcMode) ) );
 
     connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
              , this, SLOT( add2LogOutput(QByteArray) ) );
@@ -431,8 +452,14 @@ void ComItem::fillSetupFields()
 /*****************************************************************************/
 void ComItem::startConnect()
 {
+    QByteArray array;
+
     //check if already open
-    if (m_port.isOpen()) return;
+    if (m_port.isOpen()) {
+        array = m_port.portName().toLocal8Bit();
+        printf("App already connect to port %s!\n",(const char*)array.data());
+        return;
+    }
 
     //read current setups
     doSetup(readSetups());
@@ -443,7 +470,8 @@ void ComItem::startConnect()
     //update gui fields enable for user
     updateSetupFields();
     if (m_port.isOpen()) {
-
+        array = m_port.portName().toLocal8Bit();
+        printf("Port %s open succsess!\n",(const char*)array.data());
     }
 }
 /*****************************************************************************/
@@ -563,6 +591,36 @@ void ComItem::readPort()
 {
     const QByteArray data = m_port.readAll();
     emit readData(data);
+}
+/*****************************************************************************/
+QByteArray ComItem::readPortManual()
+{
+    return m_port.readAll();
+}
+/*****************************************************************************/
+void ComItem::setRcMode(device_rcMode a_mode)
+{
+    switch(a_mode){
+    case _interface_manual_rc:
+        this->add2Log(tr("Manual read hardware reg mode!")
+                );
+        disconnect(&m_port, SIGNAL(readyRead())
+                ,this ,SLOT(readPort()));
+        break;
+
+    case _interface_signal_rc:
+        this->add2Log(tr("Signal read hardware reg mode!")
+                );
+        connect(&m_port, SIGNAL(readyRead())
+                ,this ,SLOT(readPort()));
+        break;
+
+    default:
+        this->add2Log(tr("Unknown read hardware reg mode!")
+                );
+        break;
+
+    }
 }
 /*****************************************************************************/
 void ComItem::setComDescription(QString  a_text)
@@ -718,6 +776,7 @@ void ComItem::loadConfigFile(QString filepath)
     if(!file.open(QIODevice::ReadOnly)) {
         msgBoxError.setText(QString("Cant open file (%1)!").arg(filepath));
         msgBoxError.exec();
+        qDebug()<<QString("Cant open file (%1)!").arg(filepath);
     }
     //read string
     QString strData;
@@ -783,16 +842,17 @@ void ComItem::add2Log(QString data)
                 .arg(data)
                 .arg(m_log.blockCount())
                 );
+    qDebug()<<data;
 }
 /*****************************************************************************/
 void ComItem::add2LogInput(QByteArray data)
 {
     QString strData = data.toHex();
-    add2Log(QString("<font color=\"green\">Input</font>:0x%1").arg(strData));
+    //add2Log(QString("<font color=\"green\">Input</font>:0x%1").arg(strData));
 }
 /*****************************************************************************/
 void ComItem::add2LogOutput(QByteArray data)
 {
     QString strData = data.toHex();
-    add2Log(QString("<font color=\"green\">Output</font>:0x%1").arg(strData));
+    //add2Log(QString("<font color=\"green\">Output</font>:0x%1").arg(strData));
 }

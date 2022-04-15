@@ -22,7 +22,7 @@ DEFINES += GIT_TIMESTAMP=\\\"$$system($$quote(git log -n 1 --format=format:\\\"%
 ######################################################
 #qt variables
 #on ubuntu install libqt5serialport5-dev package
-QT       += core gui serialport
+QT       += core gui serialport concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -148,19 +148,18 @@ int main(int argc, char *argv[])
         if(one_line.first==CONSOLE_CMD_WINDOW){
             isShow = false;
         }
-        qDebug()<<" param:" <<one_line.first;
     }
 
     if(isShow) {
         QApplication a(argc, argv);
         ComDispatcher w;
-        printf("app mode");
+        qDebug()<<("app mode");
         w.show();
         return a.exec();
     }else{
-        QCoreApplication a(argc, argv);
+        QApplication a(argc, argv);
         ComDispatcher w;
-        printf("console mode");
+        qDebug()<<("console mode");
         w.console(console);
         return a.exec();
     }

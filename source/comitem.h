@@ -112,6 +112,7 @@ public:
     */
     void* getDevice(){return m_pDevice;}
 
+    QByteArray readPortManual();
 public slots:
     /*!
      * \brief setDevice установить номер и тип устройства(COM1)
@@ -306,6 +307,8 @@ private slots:
     void statusConnectOff();
 
     void setupsDeviceConnections(QString index);
+
+    void setRcMode(device_rcMode a_mode);
 };
 
 ///@}
