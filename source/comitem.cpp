@@ -336,6 +336,8 @@ void ComItem::setDevice(QString a_strDeviceName)
 
     ((DeviceInterface*)m_pDevice)->m_pHardware = (void*)(&m_port);
 
+    ((DeviceInterface*)m_pDevice)->runSetups();
+
     connect( this, SIGNAL( readData(QByteArray) )
              , (QObject*)m_pDevice, SLOT( receiveDataFromDevice(QByteArray) ) );
     connect( (QObject*)m_pDevice, SIGNAL( send(QByteArray) )
