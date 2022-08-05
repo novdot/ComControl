@@ -68,7 +68,10 @@ void ComItem::console(QList< QPair<QString,QString > > commands)
         one_line = commands.at(i);
         if(one_line.first==CONSOLE_CMD_SETUPS){
             qDebug()<<"Load COM port params from file:"<<one_line.second;
-            loadConfigFile(one_line.second);
+            if(!loadConfigFile(one_line.second)){
+                qDebug()<<"Got some errors while load params! Check conf file! Exit.";
+                goto fail;
+            }
         }
     }
 
@@ -91,7 +94,7 @@ void ComItem::console(QList< QPair<QString,QString > > commands)
     if(m_strDeviceName==SETUPS_BOOT_NAME) ((SETUPS_BOOT_CLASS*)m_pDevice)->console(commands);
 #endif
 
-
+fail:;
 }
 /*****************************************************************************/
 void ComItem::initStatus()
@@ -768,7 +771,7 @@ void ComItem::openConfigFile()
     QString strFile = m_pui->lineEdit_item_com_setup_current_config->text();
     loadConfigFile(strFile);
 }
-void ComItem::loadConfigFile(QString filepath)
+bool ComItem::loadConfigFile(QString filepath)
 {
     QStringList lstField;
     QStringList lstVal;
@@ -800,32 +803,79 @@ void ComItem::loadConfigFile(QString filepath)
             goto end_value;
         }
         if(lstVal[0]==__CONF_DATABITS) {
-            m_pui->comboBox_item_com_setup_databits->setCurrentText(lstVal[1]);
+            if(m_pui->comboBox_item_com_setup_databits->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find databits setup (%1)!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find databits setup (%1)!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_setup_databits->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
         if(lstVal[0]==__CONF_PARITY) {
-            m_pui->comboBox_item_com_setup_parity->setCurrentText(lstVal[1]);
+            if(m_pui->comboBox_item_com_setup_parity->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find parity setup (%1)!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find parity setup (%1)!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_setup_parity->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
         if(lstVal[0]==__CONF_STOPBITS) {
-            m_pui->comboBox_item_com_setup_stopbits->setCurrentText(lstVal[1]);
+            if(m_pui->comboBox_item_com_setup_stopbits->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find stopbits setup (%1)!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find stopbits setup (%1)!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_setup_stopbits->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
         if(lstVal[0]==__CONF_FLOWCONTROL) {
-            m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText(lstVal[1]);
+            if(m_pui->comboBox_item_com_setup_flowcontrol->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find flowcontrol setup (%1)!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find flowcontrol setup (%1)!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_setup_flowcontrol->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
         if(lstVal[0]==__CONF_DEVICE) {
-            m_pui->comboBox_item_com_setup_device->setCurrentText(lstVal[1]);
+            //check if COM not exist
+            if(m_pui->comboBox_item_com_setup_device->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find device (%1)! Check libraries DLLs!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find device (%1)! Check libraries DLLs!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_setup_device->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
         if(lstVal[0]==__CONF_COM) {
-            m_pui->comboBox_item_com_choose->setCurrentText(lstVal[1]);
+            //check if COM not exist
+            if(m_pui->comboBox_item_com_choose->findText(lstVal[1])==-1){
+                msgBoxError.setText(QString("Cant find COM port (%1)!").arg(lstVal[1]));
+                msgBoxError.exec();
+                qDebug()<<QString("Cant find COM port (%1)!").arg(lstVal[1]);
+                goto fail;
+            }else{
+                m_pui->comboBox_item_com_choose->setCurrentText(lstVal[1]);
+            }
             goto end_value;
         }
 end_value:;
     }
 
+    return true;
+fail:;
+    return false;
 }
 /*****************************************************************************/
 void ComItem::openLog()

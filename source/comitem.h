@@ -235,12 +235,16 @@ private:
     */
     void initStatus();
 
+    /*!
+     * \brief загружаем конфигурацию настроек порта. обновляем поля формы загруженными настройками
+    */
+    bool loadConfigFile(QString filepath);
+
 private slots:
     /*!
      * \brief загружаем конфигурацию настроек порта. обновляем поля формы загруженными настройками
     */
     void openConfigFile();
-    void loadConfigFile(QString filepath);
     /*!
      * \brief сохраняем файл конфигурации настроек порта. данные тянем из полей формы
     */
