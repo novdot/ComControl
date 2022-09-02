@@ -22,6 +22,10 @@ ComDispatcher::ComDispatcher(QWidget *parent)
                 .arg(strProjName)
                 .arg(strProjVersion)
                 );
+    qDebug()<<
+               tr("%1 %2")
+               .arg(strProjName)
+               .arg(strProjVersion);
 
     ui->tabWidget->setTabsClosable(true);
 
