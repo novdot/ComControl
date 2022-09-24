@@ -52,7 +52,9 @@ ComItem::ComItem(QWidget *parent)
 #if defined(DEVICE_BOOT)
     m_pui->comboBox_item_com_setup_device->addItem(SETUPS_BOOT_NAME);
 #endif
-
+#if defined(DEVICE_DPB)
+    m_pui->comboBox_item_com_setup_device->addItem(SETUPS_DPB_NAME);
+#endif
     //if compiled with profile
     //SETUPS_COMITEM_CONSTRUCTOR();
 }
@@ -93,6 +95,10 @@ void ComItem::console(QList< QPair<QString,QString > > commands)
 #if defined(DEVICE_BOOT)
     if(m_strDeviceName==SETUPS_BOOT_NAME) ((SETUPS_BOOT_CLASS*)m_pDevice)->console(commands);
 #endif
+#if defined(DEVICE_DPB)
+    if(m_strDeviceName==SETUPS_DPB_NAME) ((SETUPS_DPB_CLASS*)m_pDevice)->console(commands);
+#endif
+
 
 fail:;
 }
@@ -187,6 +193,15 @@ void ComItem::setupsDeviceConnections(QString a_index)
         strParity=(SETUPS_BOOT_parity);
         strStopbits=(SETUPS_BOOT_stopbits);
         strFlowcontrol=(SETUPS_BOOT_flowcontrol);
+    }
+#endif
+#if defined(DEVICE_DPB)
+    if(strCurrentDev == SETUPS_DPB_NAME) {
+        strBaudrate=(SETUPS_DPB_baudrate);
+        strDatabits=(SETUPS_DPB_databits);
+        strParity=(SETUPS_DPB_parity);
+        strStopbits=(SETUPS_DPB_stopbits);
+        strFlowcontrol=(SETUPS_DPB_flowcontrol);
     }
 #endif
 
@@ -335,6 +350,9 @@ void ComItem::setDevice(QString a_strDeviceName)
 #endif
 #if defined(DEVICE_BOOT)
     if(m_strDeviceName==SETUPS_BOOT_NAME) m_pDevice = new SETUPS_BOOT_CLASS();
+#endif
+#if defined(DEVICE_DPB)
+    if(m_strDeviceName==SETUPS_DPB_NAME) m_pDevice = new SETUPS_DPB_CLASS();
 #endif
 
     ((DeviceInterface*)m_pDevice)->m_pHardware = (void*)(&m_port);

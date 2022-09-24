@@ -75,7 +75,8 @@ FORMS += \
 #
 ######################################################
 CONFIG += \
-    device_boot
+    device_dpb
+    #device_boot
     #device_accel_ato
 
 CONFIG(device_all_enabled): {
