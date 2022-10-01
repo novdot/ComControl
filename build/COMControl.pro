@@ -16,13 +16,13 @@ DEPENDPATH += $$LIB_PATH/include
 #version by git
 #git tag v1.0
 #always run qmake
-DEFINES += GIT_VERSION=\\\"$$system($$quote(git describe --tags))\\\"
-DEFINES += GIT_TIMESTAMP=\\\"$$system($$quote(git log -n 1 --format=format:\\\"%ai\\\"))\\\"
+DEFINES += GIT_VERSION=0#\\\"$$system($$quote(git describe --tags))\\\"
+DEFINES += GIT_TIMESTAMP=0#\\\"$$system($$quote(git log -n 1 --format=format:\\\"%ai\\\"))\\\"
 
 ######################################################
 #qt variables
 #on ubuntu install libqt5serialport5-dev package
-QT       += core gui serialport concurrent
+QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -75,8 +75,9 @@ FORMS += \
 #
 ######################################################
 CONFIG += \
-    device_dpb
-    #device_boot
+    device_boot
+    #device_dpb
+    #
     #device_accel_ato
 
 CONFIG(device_all_enabled): {

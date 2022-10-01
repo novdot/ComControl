@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
     QString cmd;
     QStringList lst_cmd;
     QPair<QString,QString > one_line;
+    int retval = 0;
 
     //float_dbg();
 
@@ -149,19 +150,35 @@ int main(int argc, char *argv[])
             isShow = false;
         }
     }
+    /**
+     * https://habr.com/ru/post/188816/
+     * «Failed to load platform plugin „windows“»
+     * On Windows XP platform
+     */
+    //Q_INIT_RESOURCE(resources);
+
+    QStringList paths = QCoreApplication::libraryPaths();
+    paths.append(".");
+    //paths.append("imageformats");
+    paths.append("platforms");
+    //paths.append("sqldrivers");
+    QCoreApplication::setLibraryPaths(paths);
 
     if(isShow) {
         QApplication a(argc, argv);
         ComDispatcher w;
         qDebug()<<("app mode");
         w.show();
-        return a.exec();
+        retval = a.exec();
     }else{
         QApplication a(argc, argv);
         ComDispatcher w;
         qDebug()<<("console mode");
         w.console(console);
-        return a.exec();
+        retval = a.exec();
     }
-    return 0;
+
+    printf("Programm end (code:%d)! Press any button to esc...",retval);
+    getchar();
+    return retval;
 }
