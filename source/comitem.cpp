@@ -496,6 +496,10 @@ void ComItem::startConnect()
         array = m_port.portName().toLocal8Bit();
         printf("Port %s open succsess!\n",(const char*)array.data());
     }
+
+    //switch setting tab to device tab
+    if( (m_pui->tabWidget->count()>=__TAB_MAX)&&(m_pui->tabWidget->currentIndex()==__TAB_SETUPS_IND) )
+        m_pui->tabWidget->setCurrentIndex(__TAB_DEVICE_IND);
 }
 /*****************************************************************************/
 void ComItem::doConnect()
@@ -535,6 +539,7 @@ void ComItem::startDisconnect()
 {
     //close port
     if (m_port.isOpen()) {
+        m_port.flush();
         m_port.close();
         emit disconnected(this);
     }
@@ -608,6 +613,25 @@ void ComItem::handleError(QSerialPort::SerialPortError error)
             .arg(m_settings.name)
             .arg(error)
             );
+    switch(error){
+    case QSerialPort::DeviceNotFoundError      :break;
+    case QSerialPort::PermissionError          :break;
+    case QSerialPort::OpenError                :break;
+    case QSerialPort::ParityError              :break;
+    case QSerialPort::FramingError             :break;
+    case QSerialPort::BreakConditionError      :break;
+    case QSerialPort::WriteError               :break;
+    case QSerialPort::ReadError                :break;
+    case QSerialPort::ResourceError            :
+        if(m_port.isOpen()){
+            m_port.flush();
+            m_port.close();
+            doConnect();
+        }
+        break;
+    case QSerialPort::UnsupportedOperationError:break;
+    case QSerialPort::UnknownError             :break;
+    }
 }
 /*****************************************************************************/
 void ComItem::readPort()
@@ -676,6 +700,8 @@ void ComItem::setComDescription(QString  a_text)
                         );
         }
     }
+
+    m_pui->groupBox_item_com_control->setTitle(trUtf8("Control %1").arg(a_text));
 
 }
 

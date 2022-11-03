@@ -54,6 +54,7 @@ typedef enum com_stateDef{
 }com_state;
 
 //индексы вкладок
+#define __TAB_MAX 2
 #define __TAB_SETUPS_IND 0
 #define __TAB_DEVICE_IND 1
 
