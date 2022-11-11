@@ -623,15 +623,16 @@ void ComItem::handleError(QSerialPort::SerialPortError error)
     case QSerialPort::WriteError               :break;
     case QSerialPort::ReadError                :break;
     case QSerialPort::ResourceError            :
-        if(m_port.isOpen()){
+        /*if(m_port.isOpen()){
             m_port.flush();
             m_port.close();
             doConnect();
-        }
+        }*/
         break;
     case QSerialPort::UnsupportedOperationError:break;
     case QSerialPort::UnknownError             :break;
     }
+    statusErrorOn(error);
 }
 /*****************************************************************************/
 void ComItem::readPort()

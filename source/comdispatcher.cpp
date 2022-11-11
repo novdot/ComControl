@@ -4,6 +4,9 @@
 #include "setups.h"
 
 #include <QThread>
+#include <QLibrary>
+
+#define PROJECT_VER "2.0"
 
 /*****************************************************************************/
 ComDispatcher::ComDispatcher(QWidget *parent)
@@ -14,8 +17,20 @@ ComDispatcher::ComDispatcher(QWidget *parent)
 
     QString strProjName = "COMControl";
     QString strProjVersion = tr("%1 %2")
-                                .arg(GIT_VERSION)
-                                .arg(GIT_TIMESTAMP);
+                                .arg(PROJECT_VER)
+                                .arg(__TIMESTAMP__);
+    QString strCompilerVer = "";
+
+#if defined(__GNUC__)
+    strCompilerVer = tr("GNU %1.%2.%3")
+            .arg(__GNUC__ )
+            .arg(__GNUC_MINOR__ )
+            .arg(__GNUC_PATCHLEVEL__ );
+
+#elif defined(_MSC_VER)
+    strCompilerVer = tr("MSC %1")
+            .arg(_MSC_VER )
+#endif
 
     this->setWindowTitle(
                 tr("%1 %2")
@@ -40,10 +55,31 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     m_strAbout.appendHtml(tr("%1 %2")
                           .arg(strProjName)
                           .arg(strProjVersion));
-    m_strAbout.appendHtml(tr("<p>Проект разработан на С++ с использованием библиотеки Qt</p><p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>"));
+    m_strAbout.appendHtml(tr(""
+                             "<p>Проект разработан на С++ с использованием библиотеки Qt</p>"
+                             "<p>Версия Qt: %1</p>"
+                             "<p>Версия Compiler: %2</p>"
+                             "<p>Дата сборки: %3</p>"
+                             "<p>Версия проекта: %4</p>"
+                             "<p>Проект на GitHub:<a href=\"https://github.com/novdot/comcontrol.git\">https://github.com/novdot/comcontrol.git</a></p>")
+                          .arg(QT_VERSION_STR)
+                          .arg(strCompilerVer )
+                          .arg(__TIMESTAMP__ )
+                          .arg(PROJECT_VER )
+                          );
     m_strAbout.appendHtml(tr("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">https://idea2art.ru/content_item#78</a>"));
 
     SETUPS_DISPATCHER_CONSTRUCTOR();
+
+    //read configuration file
+
+    //load DLL libraries
+    //DeviceControl load always
+    QLibrary lib( "DeviceControl" );
+    if( !lib.load() ) {
+        qDebug() << "Loading failed!";
+    }
+
 }
 
 ComDispatcher::~ComDispatcher()
