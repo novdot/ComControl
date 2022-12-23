@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QLibrary>
 
 #include <stdio.h>
 #include <stdlib.h>

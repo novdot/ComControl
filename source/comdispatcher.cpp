@@ -20,6 +20,8 @@ ComDispatcher::ComDispatcher(QWidget *parent)
                                 .arg(PROJECT_VER)
                                 .arg(__TIMESTAMP__);
     QString strCompilerVer = "";
+    QString gitFileName = "../.git/FETCH_HEAD";
+    QString git_ver;
 
 #if defined(__GNUC__)
     strCompilerVer = tr("GNU %1.%2.%3")
@@ -31,6 +33,21 @@ ComDispatcher::ComDispatcher(QWidget *parent)
     strCompilerVer = tr("MSC %1")
             .arg(_MSC_VER )
 #endif
+
+    QFile file(gitFileName);
+
+    if (!file.open(QIODevice::ReadOnly)){
+        strProjVersion = QString("%1 %2")
+                .arg(strProjVersion)
+                .arg("<cant find git>")
+                ;
+    }else{
+        git_ver = file.readLine();
+        strProjVersion = QString("%1 %2")
+                .arg(strProjVersion)
+                .arg(git_ver)
+                ;
+    }
 
     this->setWindowTitle(
                 tr("%1 %2")
@@ -69,7 +86,8 @@ ComDispatcher::ComDispatcher(QWidget *parent)
                           );
     m_strAbout.appendHtml(tr("Сайт с описанием проекта: <a href=\"https://http://idea2art.ru/content_item#78\">https://idea2art.ru/content_item#78</a>"));
 
-    SETUPS_DISPATCHER_CONSTRUCTOR();
+    //SETUPS_DISPATCHER_CONSTRUCTOR();
+    this->createTab();
 
     //read configuration file
 
